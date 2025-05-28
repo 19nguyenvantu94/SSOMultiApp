@@ -6,3 +6,5 @@
 /IdentityAuthen/WebApplication1/bin/Debug/net8.0
 /IdentityAuthen/WebApplication1/obj/Debug/net8.0/staticwebassets
 /IdentityAuthen/WebApplication1/obj
+/IdentityAuthen/nuget.config
+/IdentityAuthen/.vs/ProjectEvaluation
