@@ -1,16 +1,15 @@
 -- Migration Command
 
-add-migration FirstMigrate -OutputDir  Data/Migrations/ApplicationDb  -StartupProject BlazorIdentity -Context ApplicationDbContext
+add-migration FirstMigrate -OutputDir  Data/Migrations/ApplicationDb  -StartupProject Authen -Context ApplicationDbContext
 
-add-migration GenerateApplicationTenantDB1 -OutputDir  Data/Migrations/TenantStoreDb  -StartupProject BlazorIdentity -Context TenantStoreDbContext
+add-migration GenerateApplicationTenantDB1 -OutputDir  Data/Migrations/TenantStoreDb  -StartupProject Authen -Context TenantStoreDbContext
 
 
 -- Update Database
 
-update-database -StartupProject BlazorIdentity  -Context ApplicationDbContext
+update-database -StartupProject Authen  -Context ApplicationDbContext
 
-
-update-database -StartupProject BlazorIdentity  -Context TenantStoreDbContext
+update-database -StartupProject Authen  -Context TenantStoreDbContext
 
 
 

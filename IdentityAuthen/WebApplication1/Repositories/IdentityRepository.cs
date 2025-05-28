@@ -279,7 +279,7 @@ namespace Authen.Repositories
             return pagedList;
         }
 
-        public virtual Task<ApplicationUserClaim> GetUserClaimAsync(string userId, int claimId)
+        public virtual Task<ApplicationUserClaim> GetUserClaimAsync(string userId, Guid claimId)
         {
             var userIdConverted = ConvertKeyFromString(userId);
 
@@ -289,7 +289,7 @@ namespace Authen.Repositories
 
 
 
-        public virtual Task<ApplicationRoleClaim> GetRoleClaimAsync(string roleId, int claimId)
+        public virtual Task<ApplicationRoleClaim> GetRoleClaimAsync(string roleId, Guid claimId)
         {
             var roleIdConverted = ConvertKeyFromString(roleId);
 
@@ -332,7 +332,7 @@ namespace Authen.Repositories
         }
 
 
-        public virtual async Task<IdentityResult> DeleteUserClaimAsync(string userId, int claimId)
+        public virtual async Task<IdentityResult> DeleteUserClaimAsync(string userId, Guid claimId)
         {
             var user = await UserManager.FindByIdAsync(userId);
             var userClaim = await DbContext.Set<ApplicationUserClaim>().Where(x => x.Id == claimId).SingleOrDefaultAsync();
@@ -340,7 +340,7 @@ namespace Authen.Repositories
             return await UserManager.RemoveClaimAsync(user, new Claim(userClaim.ClaimType, userClaim.ClaimValue));
         }
 
-        public virtual async Task<IdentityResult> DeleteRoleClaimAsync(string roleId, int claimId)
+        public virtual async Task<IdentityResult> DeleteRoleClaimAsync(string roleId, Guid claimId)
         {
             var role = await RoleManager.FindByIdAsync(roleId);
             var roleClaim = await DbContext.Set<ApplicationRoleClaim>().Where(x => x.Id == claimId).SingleOrDefaultAsync();

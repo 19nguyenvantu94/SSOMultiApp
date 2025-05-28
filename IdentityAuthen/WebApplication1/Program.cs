@@ -1,10 +1,44 @@
 using Authen;
+using Authen.Authorization;
+using Authen.Configuration.Email;
+using Authen.Constants;
+using Authen.Data;
+using Authen.Helpers.Localization;
+using Authen.Localization;
 using Authen.Repositories;
+using Authen.Repositories.Interfaces;
+using Authen.Resources;
+using Authen.Server.Aop;
+using Authen.Users.Constants;
+using Authen.Users.Data;
 using Authen.Users.Models;
+using Authen.Users.Services;
+using AuthenApi.Mappers;
+using AuthenApi.Repositories;
+using AuthenApi.Repositories.Interfaces;
+using AuthenApi.Resources;
+using AuthenApi.Services;
+using AuthenApi.Services.Interfaces;
+using Finbuckle.MultiTenant;
+using Finbuckle.MultiTenant.Abstractions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+using SendGrid;
 using Serilog;
 using Serilog.Events;
+using Serilog.Extensions.Logging;
 using Serilog.Sinks.SystemConsole.Themes;
+using SharedLib.DistributedRedis;
+using SharedLib.MySQL;
 using System.Diagnostics;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,9 +58,9 @@ builder.Logging.AddSerilog();
 
 var configuration = builder.Configuration;
 
-//builder.AddRedisDistributedCache("Redis");
+builder.AddRedisDistributedCache("Redis");
 
-//builder.AddRabbitMqEventBus("EventBus");
+builder.AddRabbitMqEventBus("EventBus");
 builder.AddMySqlDbContext<ApplicationDbContext>("Identitydb");
 builder.AddMySqlDbContext<TenantStoreDbContext>("Identitydb");
 
@@ -89,7 +123,7 @@ builder.Services.Replace(new ServiceDescriptor(typeof(ITenantResolver), sp => sp
 //builder.AddSqlServerDbContext<ApplicationDbContext>("Identitydb");
 
 builder.Services.AddTransient<IDatabaseInitializer, DatabaseInitializer>();
-var withApiVersioning = builder.Services.AddApiVersioning();
+//var withApiVersioning = builder.Services.AddApiVersioning();
 
 //builder.AddDefaultOpenApi(withApiVersioning);
 

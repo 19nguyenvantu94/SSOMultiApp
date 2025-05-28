@@ -9,7 +9,6 @@ namespace Authen.Users.Models
     [Permissions(Actions.CRUD)]
     public class ApplicationUserClaim : IdentityUserClaim<Guid>, ISoftDelete
     {
-
         public override Guid UserId { get; set; }
 
         public string CreatedBy { get; set; }

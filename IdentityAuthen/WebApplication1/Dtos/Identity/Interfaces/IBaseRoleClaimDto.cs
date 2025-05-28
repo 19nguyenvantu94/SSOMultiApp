@@ -5,7 +5,7 @@ namespace AuthenApi.Dtos.Identity.Interfaces
 {
     public interface IBaseRoleClaimDto
     {
-        int ClaimId { get; set; }
+        Guid ClaimId { get; set; }
         object RoleId { get; }
     }
 }

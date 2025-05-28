@@ -52,7 +52,7 @@ namespace AuthenApi.Services.Interfaces
         Task<UserClaimsDto<UserClaimDto<Guid>, Guid>> GetUserClaimsAsync(string userId, int page = 1,
             int pageSize = 10);
 
-        Task<UserClaimsDto<UserClaimDto<Guid>, Guid>> GetUserClaimAsync(string userId, int claimId);
+        Task<UserClaimsDto<UserClaimDto<Guid>, Guid>> GetUserClaimAsync(string userId, Guid claimId);
 
         Task<IdentityResult> CreateUserClaimsAsync(UserClaimDto<Guid> claimsDto);
 
@@ -78,7 +78,7 @@ namespace AuthenApi.Services.Interfaces
 
         Task<RoleClaimsDto<RoleClaimDto<Guid>, Guid>> GetUserRoleClaimsAsync(string userId, string claimSearchText, int page = 1, int pageSize = 10);
 
-        Task<RoleClaimsDto<RoleClaimDto<Guid>, Guid>> GetRoleClaimAsync(string roleId, int claimId);
+        Task<RoleClaimsDto<RoleClaimDto<Guid>, Guid>> GetRoleClaimAsync(string roleId, Guid claimId);
 
         Task<IdentityResult> DeleteRoleClaimAsync(RoleClaimDto<Guid> role);
 

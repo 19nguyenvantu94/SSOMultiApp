@@ -9,11 +9,12 @@ namespace Authen.Users.Models
     [Permissions(Actions.CRUD)]
     public class ApplicationRoleClaim : IdentityRoleClaim<Guid>, ISoftDelete
     {
-        public string Description { get; set; }
-        public string Group { get; set; }
-        public string CreatedBy { get; set; }
+
+        public string? Description { get; set; }
+        public string? Group { get; set; }
+        public string? CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
-        public string LastModifiedBy { get; set; }
+        public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
         public bool IsDeleted { get; set; } = false;
@@ -29,7 +30,7 @@ namespace Authen.Users.Models
 
         }
 
-        public ApplicationRoleClaim(string roleClaimDescription = null, string roleClaimGroup = null) : base()
+        public ApplicationRoleClaim(string? roleClaimDescription = null, string? roleClaimGroup = null) : base()
         {
             Description = roleClaimDescription;
             Group = roleClaimGroup;
