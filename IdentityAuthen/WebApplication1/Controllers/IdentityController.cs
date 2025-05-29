@@ -226,10 +226,10 @@ namespace Authen.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> UserClaimsDelete(Guid id, Guid claimId)
+        public async Task<IActionResult> UserClaimsDelete(Guid id, int claimId)
         {
             if (EqualityComparer<Guid>.Default.Equals(id, default)
-            || EqualityComparer<Guid>.Default.Equals(claimId, default)) return NotFound();
+            || EqualityComparer<int>.Default.Equals(claimId, default)) return NotFound();
 
             var claim = await _identityService.GetUserClaimAsync(id.ToString(), claimId);
             if (claim == null) return NotFound();
@@ -345,10 +345,10 @@ namespace Authen.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> RoleClaimsDelete(Guid id, Guid claimId)
+        public async Task<IActionResult> RoleClaimsDelete(Guid id, int claimId)
         {
             if (EqualityComparer<Guid>.Default.Equals(id, default) ||
-                EqualityComparer<Guid>.Default.Equals(claimId, default)) return NotFound();
+                EqualityComparer<int>.Default.Equals(claimId, default)) return NotFound();
 
             var claim = await _identityService.GetRoleClaimAsync(id.ToString(), claimId);
 

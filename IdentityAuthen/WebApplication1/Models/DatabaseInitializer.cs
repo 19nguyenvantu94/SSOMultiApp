@@ -106,7 +106,7 @@ namespace Authen.Users.Models
                 await _roleManager.AddClaimAsync(adminRole, new Claim(ApplicationClaimTypes.Permission, claim));
 
             var DeprecatedClaims = RoleClaims.Except(AllClaims);
-            var roles = await _roleManager.Roles.ToListAsync();
+            var roles = await _roleManager.Roles.Where(x => x.Name == DefaultRoleNames.Administrator).ToListAsync();
 
             foreach (string claim in DeprecatedClaims)
                 foreach (var role in roles)

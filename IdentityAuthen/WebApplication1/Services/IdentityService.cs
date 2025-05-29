@@ -273,7 +273,7 @@ namespace AuthenApi.Services
 			return claimDtos;
 		}
 
-		public virtual async Task<UserClaimsDto<UserClaimDto<Guid>, Guid>> GetUserClaimAsync(string userId, Guid claimId)
+		public virtual async Task<UserClaimsDto<UserClaimDto<Guid>, Guid>> GetUserClaimAsync(string userId, int claimId)
 		{
 			var userExists = await IdentityRepository.ExistsUserAsync(userId);
 			if (!userExists) throw new UserFriendlyErrorPageException(string.Format(IdentityServiceResources.UserDoesNotExist().Description, userId), IdentityServiceResources.UserDoesNotExist().Description);
@@ -425,7 +425,7 @@ namespace AuthenApi.Services
 			return roleClaimDtos;
 		}
 
-		public virtual async Task<RoleClaimsDto<RoleClaimDto<Guid>, Guid>> GetRoleClaimAsync(string roleId, Guid claimId)
+		public virtual async Task<RoleClaimsDto<RoleClaimDto<Guid>, Guid>> GetRoleClaimAsync(string roleId, int claimId)
 		{
 			var roleExists = await IdentityRepository.ExistsRoleAsync(roleId);
 			if (!roleExists) throw new UserFriendlyErrorPageException(string.Format(IdentityServiceResources.RoleDoesNotExist().Description, roleId), IdentityServiceResources.RoleDoesNotExist().Description);

@@ -49,13 +49,13 @@ namespace Authen.Repositories.Interfaces
 
         Task<PagedList<ApplicationUserClaim>> GetUserClaimsAsync(string userId, int page = 1, int pageSize = 10);
 
-        Task<ApplicationUserClaim> GetUserClaimAsync(string userId, Guid claimId);
+        Task<ApplicationUserClaim> GetUserClaimAsync(string userId, int claimId);
 
         Task<IdentityResult> CreateUserClaimsAsync(ApplicationUserClaim claims);
 
         Task<IdentityResult> UpdateUserClaimsAsync(ApplicationUserClaim claims);
 
-        Task<IdentityResult> DeleteUserClaimAsync(string userId, Guid claimId);
+        Task<IdentityResult> DeleteUserClaimAsync(string userId, int claimId);
 
         Task<List<UserLoginInfo>> GetUserProvidersAsync(string userId);
 
@@ -73,9 +73,9 @@ namespace Authen.Repositories.Interfaces
 
         Task<PagedList<ApplicationRoleClaim>> GetUserRoleClaimsAsync(string userId, string claimSearchText, int page = 1, int pageSize = 10);
 
-        Task<ApplicationRoleClaim> GetRoleClaimAsync(string roleId, Guid claimId);
+        Task<ApplicationRoleClaim> GetRoleClaimAsync(string roleId, int claimId);
 
-        Task<IdentityResult> DeleteRoleClaimAsync(string roleId, Guid claimId);
+        Task<IdentityResult> DeleteRoleClaimAsync(string roleId, int claimId);
 
         Task<IdentityResult> DeleteRoleAsync(ApplicationRole role);
 

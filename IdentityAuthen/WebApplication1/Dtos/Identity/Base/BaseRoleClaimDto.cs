@@ -7,7 +7,7 @@ namespace AuthenApi.Dtos.Identity.Base
 {
     public class BaseRoleClaimDto<TRoleId> : IBaseRoleClaimDto
     {
-        public Guid ClaimId { get; set; }
+        public int ClaimId { get; set; }
 
         public TRoleId RoleId { get; set; }
 

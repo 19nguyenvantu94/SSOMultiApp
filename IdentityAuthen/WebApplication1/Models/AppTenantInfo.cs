@@ -5,13 +5,13 @@ namespace Authen.Users.Models;
 public class AppTenantInfo : ITenantInfo
 {
     public string Id { get; set; }
-    public string Identifier { get; set; }
-    public string Name { get; set; }
-    public string ConnectionString { get; set; }
-    public string CreatedBy { get; set; }
+    public string? Identifier { get; set; }
+    public string? Name { get; set; }
+    public string? ConnectionString { get; set; }
+    public string? CreatedBy { get; set; }
     public DateTime CreatedOn { get; set; }
-    public string LastModifiedBy { get; set; }
+    public string? LastModifiedBy { get; set; }
     public DateTime? LastModifiedOn { get; set; }
 
-    public bool IsDeleted { get; set; }
+    public bool IsDeleted { get; set; } = false;
 }
