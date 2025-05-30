@@ -6,8 +6,8 @@ namespace Authen.ViewModels
     {
         [Required]
         [DataType(DataType.Text)]
-        public string RecoveryCode { get; set; }
+        public string? RecoveryCode { get; set; }
 
-        public string ReturnUrl { get; set; }
+        public string? ReturnUrl { get; set; }
     }
 }

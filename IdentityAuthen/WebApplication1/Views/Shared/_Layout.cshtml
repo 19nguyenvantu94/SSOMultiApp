@@ -46,7 +46,7 @@
         <h3 class="menu-logo my-0 mr-md-auto font-weight-normal"><a class="logo" asp-area="" asp-controller="Home" asp-action="Index">Duende IdentityServer</a></h3>
 
         <!--Menu item -->
-        @if (User.Identity.IsAuthenticated && !string.IsNullOrEmpty(name) && (User.IsInRole(role: DefaultRoleNames.Administrator)))
+        @if (User!.Identity!.IsAuthenticated && !string.IsNullOrEmpty(name) && (User.IsInRole(role: DefaultRoleNames.Administrator)))
         {
             <!--Menu item -->
             <div class="menu-item my-2 my-md-0 mr-md-3 dropdown">

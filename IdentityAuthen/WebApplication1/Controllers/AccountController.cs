@@ -72,7 +72,7 @@ namespace Authen.Controllers
         /// </summary>
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string returnUrl)
+        public async Task<IActionResult> Login(string? returnUrl = null)
         {
             // build a model so we know what to show on the login page
             var vm = await BuildLoginViewModelAsync(returnUrl);
@@ -115,7 +115,7 @@ namespace Authen.Controllers
                         return this.LoadingPage("Redirect", model.ReturnUrl);
                     }
 
-                    return Redirect(model.ReturnUrl);
+                    return Redirect(model.ReturnUrl ?? string.Empty);
                 }
 
                 // since we don't have a valid context, then we just go back to the home page
@@ -126,7 +126,7 @@ namespace Authen.Controllers
             {
                 var user = await _userManager.FindByNameAsync(model.Username);
 
-                if (user.UserType != DefaultRoleNames.Administrator)
+                if (user!.UserType != DefaultRoleNames.Administrator)
                 {
                     await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid permission", clientId: context?.Client.ClientId));
                     ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsAdmin);
@@ -135,7 +135,7 @@ namespace Authen.Controllers
                 {
                     if (user != default(ApplicationUser))
                     {
-                        var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberLogin, lockoutOnFailure: true);
+                        var result = await _signInManager.PasswordSignInAsync(user!.UserName!, model.Password, model.RememberLogin, lockoutOnFailure: true);
                         if (result.Succeeded)
                         {
                             await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName));
@@ -150,7 +150,7 @@ namespace Authen.Controllers
                                 }
 
                                 // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                                return Redirect(model.ReturnUrl);
+                                return Redirect(model.ReturnUrl ?? string.Empty);
                             }
 
                             // request for a local page
@@ -235,7 +235,7 @@ namespace Authen.Controllers
                 // build a return URL so the upstream provider will redirect back
                 // to us after the user has logged out. this allows us to then
                 // complete our single sign-out processing.
-                string url = Url.Action("Logout", new { logoutId = vm.LogoutId });
+                string url = Url.Action("Logout", new { logoutId = vm.LogoutId! });
 
                 // this triggers a redirect to the external provider for sign-out
                 return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
@@ -326,7 +326,7 @@ namespace Authen.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ResetPassword(string code = null)
+        public IActionResult ResetPassword(string? code = null)
         {
             return code == null ? View("Error") : View();
         }
@@ -376,7 +376,7 @@ namespace Authen.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
         {
             if (remoteError != null)
             {
@@ -409,15 +409,15 @@ namespace Authen.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["LoginProvider"] = info.LoginProvider;
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            var userName = info.Principal.Identity.Name;
+            var userName = info!.Principal!.Identity!.Name;
 
-            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, UserName = userName });
+            return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email!, UserName = userName! });
         }
 
         [HttpPost]
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ExternalLogin(string provider, string returnUrl = null)
+        public IActionResult ExternalLogin(string provider, string? returnUrl = null)
         {
             // Request a redirect to the external login provider.
             var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
@@ -429,7 +429,7 @@ namespace Authen.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl = null)
+        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string? returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
 
@@ -471,7 +471,7 @@ namespace Authen.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> LoginWithRecoveryCode(string returnUrl = null)
+        public async Task<IActionResult> LoginWithRecoveryCode(string? returnUrl = null)
         {
             // Ensure the user has gone through the username & password screen first
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
@@ -525,7 +525,7 @@ namespace Authen.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> LoginWith2fa(bool rememberMe, string returnUrl = null)
+        public async Task<IActionResult> LoginWith2fa(bool rememberMe, string? returnUrl = null)
         {
             // Ensure the user has gone through the username & password screen first
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
@@ -672,7 +672,7 @@ namespace Authen.Controllers
         /*****************************************/
         /* helper APIs for the AccountController */
         /*****************************************/
-        private IActionResult RedirectToLocal(string returnUrl)
+        private IActionResult RedirectToLocal(string? returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
             {
@@ -690,7 +690,7 @@ namespace Authen.Controllers
             }
         }
 
-        private async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl)
+        private async Task<LoginViewModel> BuildLoginViewModelAsync(string? returnUrl)
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (context?.IdP != null && await _schemeProvider.GetSchemeAsync(context.IdP) != null)
@@ -702,12 +702,13 @@ namespace Authen.Controllers
                 {
                     EnableLocalLogin = local,
                     ReturnUrl = returnUrl,
-                    Username = context?.LoginHint,
+                    Username = context?.LoginHint!,
+                    Password = string.Empty,
                 };
 
                 if (!local)
                 {
-                    vm.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP } };
+                    vm.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context!.IdP } };
                 }
 
                 return vm;
@@ -743,8 +744,9 @@ namespace Authen.Controllers
                 AllowRememberLogin = AccountOptions.AllowRememberLogin,
                 EnableLocalLogin = allowLocal && AccountOptions.AllowLocalLogin,
                 ReturnUrl = returnUrl,
-                Username = context?.LoginHint,
-                ExternalProviders = providers.ToArray()
+                Username = context?.LoginHint!,
+                ExternalProviders = providers.ToArray(),
+                Password = string.Empty,
             };
         }
 
@@ -760,7 +762,7 @@ namespace Authen.Controllers
         {
             var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
 
-            if (User?.Identity.IsAuthenticated != true)
+            if (User?.Identity!.IsAuthenticated != true)
             {
                 // if the user is not authenticated, then just show logged out page
                 vm.ShowLogoutPrompt = false;
@@ -788,13 +790,13 @@ namespace Authen.Controllers
             var vm = new LoggedOutViewModel
             {
                 AutomaticRedirectAfterSignOut = AccountOptions.AutomaticRedirectAfterSignOut,
-                PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
+                PostLogoutRedirectUri = logout?.PostLogoutRedirectUri!,
                 ClientName = string.IsNullOrEmpty(logout?.ClientName) ? logout?.ClientId : logout?.ClientName,
                 SignOutIframeUrl = logout?.SignOutIFrameUrl,
                 LogoutId = logoutId
             };
 
-            if (User?.Identity.IsAuthenticated == true)
+            if (User?.Identity!.IsAuthenticated == true)
             {
                 var idp = User.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
                 if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
@@ -807,7 +809,7 @@ namespace Authen.Controllers
                             // if there's no current logout context, we need to create one
                             // this captures necessary info from the current logged in user
                             // before we signout and redirect away to the external IdP for signout
-                            vm.LogoutId = await _interaction.CreateLogoutContextAsync();
+                            vm.LogoutId = await _interaction.CreateLogoutContextAsync()!;
                         }
 
                         vm.ExternalAuthenticationScheme = idp;
