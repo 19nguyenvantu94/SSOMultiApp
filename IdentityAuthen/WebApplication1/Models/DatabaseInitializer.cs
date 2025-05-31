@@ -5,7 +5,9 @@ using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using System.Security.Claims;
+using static Authen.Users.Models.Permissions;
 
 namespace Authen.Users.Models
 {
@@ -183,33 +185,29 @@ namespace Authen.Users.Models
                 if (!result.Succeeded)
                     throw new Exception(result.Errors.First().Description);
 
-                //add claims version of roles
-                if (roles != null)
+            }
+
+            if (roles != null)
+            {
+                foreach (var role in roles.Distinct())
                 {
-                    foreach (var role in roles.Distinct())
-                    {
-                        await _userManager.AddClaimAsync(applicationUser, new Claim($"Is{role}", ClaimValues.trueString));
-                    }
+                    await _userManager.AddClaimAsync(applicationUser, new Claim($"Is{role}", ClaimValues.trueString));
 
                     ApplicationUser user = await _userManager.FindByNameAsync(applicationUser.UserName);
 
-                    try
+                    if (user != null)
                     {
-                        result = await _userManager.AddToRolesAsync(user, roles.Distinct());
-                    }
-                    catch
-                    {
-                        await _userManager.DeleteAsync(user);
-                        throw;
-                    }
-
-                    if (!result.Succeeded)
-                    {
-                        await _userManager.DeleteAsync(user);
+                        if (!await _userManager.IsInRoleAsync(user, role))
+                        {
+                            var result = await _userManager.AddToRolesAsync(user, roles.Distinct());
+                        }
                     }
                 }
-                //}
 
+                //if (!result.Succeeded)
+                //{
+                //    await _userManager.DeleteAsync(user);
+                //}
             }
 
             return applicationUser;
