@@ -1,6 +1,6 @@
 -- Migration Command
 
-add-migration FirstMigrate -OutputDir  Data/Migrations/ApplicationDb  -StartupProject Authen -Context ApplicationDbContext
+add-migration UpdateCreateBy -OutputDir  Data/Migrations/ApplicationDb  -StartupProject Authen -Context ApplicationDbContext
 
 add-migration GenerateApplicationTenantDB1 -OutputDir  Data/Migrations/TenantStoreDb  -StartupProject Authen -Context TenantStoreDbContext
 

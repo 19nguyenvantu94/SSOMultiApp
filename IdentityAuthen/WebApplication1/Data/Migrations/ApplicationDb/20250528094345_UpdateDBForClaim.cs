@@ -11,15 +11,15 @@ namespace Authen.Data.Migrations.ApplicationDb
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_AspNetRoleClaims_AspNetUsers_UserId",
-                schema: "Identity",
-                table: "AspNetRoleClaims");
+            //migrationBuilder.DropForeignKey(
+            //    name: "FK_AspNetRoleClaims_AspNetUsers_UserId",
+            //    schema: "Identity",
+            //    table: "AspNetRoleClaims");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_Messages_AspNetUsers_SenderId",
-                schema: "Identity",
-                table: "Messages");
+            //migrationBuilder.DropForeignKey(
+            //    name: "FK_Messages_AspNetUsers_SenderId",
+            //    schema: "Identity",
+            //    table: "Messages");
 
             migrationBuilder.UpdateData(
                 schema: "Identity",
@@ -315,7 +315,7 @@ namespace Authen.Data.Migrations.ApplicationDb
                 schema: "Identity",
                 table: "AspNetRoleClaims",
                 type: "char(36)",
-                nullable: false,
+                nullable: true,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"),
                 collation: "ascii_general_ci",
                 oldClrType: typeof(Guid),
@@ -435,15 +435,15 @@ namespace Authen.Data.Migrations.ApplicationDb
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_AspNetRoleClaims_AspNetUsers_UserId",
-                schema: "Identity",
-                table: "AspNetRoleClaims");
+            //migrationBuilder.DropForeignKey(
+            //    name: "FK_AspNetRoleClaims_AspNetUsers_UserId",
+            //    schema: "Identity",
+            //    table: "AspNetRoleClaims");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_Messages_AspNetUsers_SenderId",
-                schema: "Identity",
-                table: "Messages");
+            //migrationBuilder.DropForeignKey(
+            //    name: "FK_Messages_AspNetUsers_SenderId",
+            //    schema: "Identity",
+            //    table: "Messages");
 
             migrationBuilder.AlterColumn<string>(
                 name: "PhoneNumber",
