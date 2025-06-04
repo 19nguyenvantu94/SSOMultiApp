@@ -20,26 +20,26 @@ namespace Authen.Users.Models
         public int StatusCode { get; set; }
 
         [Required(ErrorMessage = "FieldRequired")]
-        public string Method { get; set; }
+        public string Method { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "FieldRequired")]
         [MaxLength(2048)]
-        public string Path { get; set; }
+        public string Path { get; set; } = string.Empty;
 
         [MaxLength(2048)]
-        public string QueryString { get; set; }
+        public string QueryString { get; set; } = string.Empty;
 
         [MaxLength(256)]
-        public string RequestBody { get; set; }
+        public string RequestBody { get; set; } = string.Empty;
 
         [MaxLength(256)]
-        public string ResponseBody { get; set; }
+        public string ResponseBody { get; set; } = string.Empty;
 
         [MaxLength(45)]
-        public string IPAddress { get; set; }
+        public string IPAddress { get; set; } = string.Empty;
 
         public Guid? ApplicationUserId { get; set; }
-
-        public ApplicationUser ApplicationUser { get; set; }
+ 
+        public ApplicationUser? ApplicationUser { get; set; }
     }
 }

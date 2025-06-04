@@ -18,21 +18,21 @@ namespace Authen.Users.Models
         public bool IsNavMinified { get; set; } = false;
         public int Count { get; set; } = 0;
         public DateTime LastUpdatedDate { get; set; } = DateTime.MinValue;
-        public string Culture { get; set; }
+        public string Culture { get; set; } = string.Empty;
 
         public bool IsDarkMode { get; set; } = false;
 
         [Column(TypeName = "nvarchar(64)")]
-        public string TenantId { get; set; }
+        public string TenantId { get; set; } = string.Empty;
 
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
 
-        public string LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
-        public string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
 
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
-        public string? AvatarUrl { get; set; }
+        public string AvatarUrl { get; set; } = string.Empty;
     }
 }

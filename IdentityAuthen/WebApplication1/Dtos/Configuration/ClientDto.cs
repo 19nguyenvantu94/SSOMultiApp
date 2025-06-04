@@ -33,7 +33,7 @@ namespace AuthenApi.Dtos.Configuration
         public int? ConsentLifetime { get; set; }
 
         public int AccessTokenType { get; set; }
-        public List<SelectItemDto> AccessTokenTypes { get; set; }
+        public List<SelectItemDto>? AccessTokenTypes { get; set; }
 
         public bool AllowAccessTokensViaBrowser { get; set; }
         public bool AllowOfflineAccess { get; set; }
@@ -43,41 +43,41 @@ namespace AuthenApi.Dtos.Configuration
         public bool AlwaysSendClientClaims { get; set; }
         public int AuthorizationCodeLifetime { get; set; } = 300;
 
-        public string FrontChannelLogoutUri { get; set; }
+        public string? FrontChannelLogoutUri { get; set; }
         public bool FrontChannelLogoutSessionRequired { get; set; } = true;
-        public string BackChannelLogoutUri { get; set; }
+        public string? BackChannelLogoutUri { get; set; }
         public bool BackChannelLogoutSessionRequired { get; set; } = true;
 
         [Required]
-        public string ClientId { get; set; }
+        public string? ClientId { get; set; }
 
         [Required]
-        public string ClientName { get; set; }
+        public string? ClientName { get; set; }
 
-        public string ClientUri { get; set; }
+        public string? ClientUri { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public bool Enabled { get; set; } = true;
         public bool EnableLocalLogin { get; set; } = true;
         public int Id { get; set; }
         public int IdentityTokenLifetime { get; set; } = 300;
         public bool IncludeJwtId { get; set; }
-        public string LogoUri { get; set; }
+        public string? LogoUri { get; set; }
 
-        public string ClientClaimsPrefix { get; set; } = "client_";
+        public string? ClientClaimsPrefix { get; set; } = "client_";
 
-        public string PairWiseSubjectSalt { get; set; }
+        public string? PairWiseSubjectSalt { get; set; }
 
-        public string ProtocolType { get; set; } = "oidc";
+        public string? ProtocolType { get; set; } = "oidc";
 
-        public List<SelectItemDto> ProtocolTypes { get; set; }
+        public List<SelectItemDto>? ProtocolTypes { get; set; }
 
         public int RefreshTokenExpiration { get; set; } = 1;
-        public List<SelectItemDto> RefreshTokenExpirations { get; set; }
+        public List<SelectItemDto>? RefreshTokenExpirations { get; set; }
 
         public int RefreshTokenUsage { get; set; } = 1;
-        public List<SelectItemDto> RefreshTokenUsages { get; set; }
+        public List<SelectItemDto>? RefreshTokenUsages { get; set; }
 
         public int SlidingRefreshTokenLifetime { get; set; } = 1296000;
 
@@ -89,28 +89,28 @@ namespace AuthenApi.Dtos.Configuration
         public bool CoordinateLifetimeWithUserSession { get; set; }
 
         public List<string> PostLogoutRedirectUris { get; set; }
-        public string PostLogoutRedirectUrisItems { get; set; }
+        public string? PostLogoutRedirectUrisItems { get; set; }
 
         public List<string> IdentityProviderRestrictions { get; set; }
-        public string IdentityProviderRestrictionsItems { get; set; }
+        public string? IdentityProviderRestrictionsItems { get; set; }
 
         public List<string> RedirectUris { get; set; }
-        public string RedirectUrisItems { get; set; }
+        public string? RedirectUrisItems { get; set; }
 
         public List<string> AllowedCorsOrigins { get; set; }
-        public string AllowedCorsOriginsItems { get; set; }
+        public string? AllowedCorsOriginsItems { get; set; }
 
         public List<string> AllowedGrantTypes { get; set; }
-        public string AllowedGrantTypesItems { get; set; }
+        public string? AllowedGrantTypesItems { get; set; }
 
         public List<string> AllowedScopes { get; set; }
-        public string AllowedScopesItems { get; set; }
+        public string? AllowedScopesItems { get; set; }
 
         public DateTime? Updated { get; set; }
         public DateTime? LastAccessed { get; set; }
 
         public int? UserSsoLifetime { get; set; }
-        public string UserCodeType { get; set; }
+        public string? UserCodeType { get; set; }
         public int DeviceCodeLifetime { get; set; } = 300;
 
         public int? CibaLifetime { get; set; }
@@ -119,19 +119,19 @@ namespace AuthenApi.Dtos.Configuration
         public bool NonEditable { get; set; }
 
         public bool RequireRequestObject { get; set; }
-        
+
         public bool RequireDPoP { get; set; }
         public int DPoPValidationMode { get; set; }
-        public List<SelectItemDto> DPoPValidationModes { get; set; }
+        public List<SelectItemDto>? DPoPValidationModes { get; set; }
         public TimeSpan DPoPClockSkew { get; set; } = TimeSpan.FromMinutes(5);
 
         public int? PushedAuthorizationLifetime { get; set; }
         public bool RequirePushedAuthorization { get; set; }
-        public string InitiateLoginUri { get; set; }
-        
+        public string? InitiateLoginUri { get; set; }
+
         public List<string> AllowedIdentityTokenSigningAlgorithms { get; set; }
 
-        public string AllowedIdentityTokenSigningAlgorithmsItems { get; set; }
+        public string? AllowedIdentityTokenSigningAlgorithmsItems { get; set; }
 
         public List<ClientClaimDto> Claims { get; set; }
         public List<ClientSecretDto> ClientSecrets { get; set; }
