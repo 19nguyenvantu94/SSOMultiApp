@@ -52,8 +52,8 @@ namespace Authen.Users.Models
 
         private async Task MigrateAsync()
         {
-            //await _tenantStoreDbContext.Database.MigrateAsync();
-            //await _context.Database.MigrateAsync();
+            await _tenantStoreDbContext.Database.MigrateAsync();
+            await _context.Database.MigrateAsync();
         }
 
         private async Task SeedDemoDataAsync()

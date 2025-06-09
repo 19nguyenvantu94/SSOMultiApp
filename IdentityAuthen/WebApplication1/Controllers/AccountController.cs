@@ -126,62 +126,54 @@ namespace Authen.Controllers
             {
                 var user = await _userManager.FindByNameAsync(model.Username);
 
-                if (user!.UserType != DefaultRoleNames.Administrator)
+
+                if (user != default(ApplicationUser))
                 {
-                    await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid permission", clientId: context?.Client.ClientId));
-                    ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsAdmin);
-                }
-                else
-                {
-                    if (user != default(ApplicationUser))
+                    var result = await _signInManager.PasswordSignInAsync(user!.UserName!, model.Password, model.RememberLogin, lockoutOnFailure: true);
+                    if (result.Succeeded)
                     {
-                        var result = await _signInManager.PasswordSignInAsync(user!.UserName!, model.Password, model.RememberLogin, lockoutOnFailure: true);
-                        if (result.Succeeded)
+                        await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName));
+
+                        if (context != null)
                         {
-                            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName));
-
-                            if (context != null)
+                            if (context.IsNativeClient())
                             {
-                                if (context.IsNativeClient())
-                                {
-                                    // The client is native, so this change in how to
-                                    // return the response is for better UX for the end user.
-                                    return this.LoadingPage("Redirect", model.ReturnUrl);
-                                }
-
-                                // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                                return Redirect(model.ReturnUrl ?? string.Empty);
+                                // The client is native, so this change in how to
+                                // return the response is for better UX for the end user.
+                                return this.LoadingPage("Redirect", model.ReturnUrl);
                             }
 
-                            // request for a local page
-                            if (Url.IsLocalUrl(model.ReturnUrl))
-                            {
-                                return Redirect(model.ReturnUrl);
-                            }
-
-                            if (string.IsNullOrEmpty(model.ReturnUrl))
-                            {
-                                return Redirect("~/");
-                            }
-
-                            // user might have clicked on a malicious link - should be logged
-                            throw new Exception("invalid return URL");
+                            // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                            return Redirect(model.ReturnUrl ?? string.Empty);
                         }
 
-                        if (result.RequiresTwoFactor)
+                        // request for a local page
+                        if (Url.IsLocalUrl(model.ReturnUrl))
                         {
-                            return RedirectToAction(nameof(LoginWith2fa), new { model.ReturnUrl, RememberMe = model.RememberLogin });
+                            return Redirect(model.ReturnUrl);
                         }
 
-                        if (result.IsLockedOut)
+                        if (string.IsNullOrEmpty(model.ReturnUrl))
                         {
-                            return View("Lockout");
+                            return Redirect("~/");
                         }
+
+                        // user might have clicked on a malicious link - should be logged
+                        throw new Exception("invalid return URL");
                     }
-                    await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId));
-                    ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
-                }
 
+                    if (result.RequiresTwoFactor)
+                    {
+                        return RedirectToAction(nameof(LoginWith2fa), new { model.ReturnUrl, RememberMe = model.RememberLogin });
+                    }
+
+                    if (result.IsLockedOut)
+                    {
+                        return View("Lockout");
+                    }
+                }
+                await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId));
+                ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
             }
 
             // something went wrong, show form with error

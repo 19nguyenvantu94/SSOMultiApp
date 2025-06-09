@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Duende.IdentityServer.EntityFramework.Interfaces;
+using Authen.Models;
 
 namespace Authen.Data
 {
@@ -71,6 +72,8 @@ namespace Authen.Data
         public DbSet<ApiResource> ApiResources { get; set; }
         public DbSet<ApiScope> ApiScopes { get; set; }
         public DbSet<IdentityProvider> IdentityProviders { get; set; }
+
+        public DbSet<ClientClaimPolicy>  ClientClaimPolicies { get; set; }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
         {

@@ -17,7 +17,6 @@ namespace Authen
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly ApplicationDbContext _applicationDbContext;
-
         public ProfileService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ApplicationDbContext applicationDbContext)
         {
             _userManager = userManager;
@@ -62,6 +61,7 @@ namespace Authen
                 });
             }
 
+            claims.Add(new Claim("avatar", user.AvatarUrl!));
 
             if (user.UserType == DefaultRoleNames.Administrator)
             {
@@ -79,7 +79,23 @@ namespace Authen
             var subjectId = subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
             var user = await _userManager.FindByIdAsync(subjectId);
 
-            context.IsActive = false;
+            var clientId = context.Client.ClientId;
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var policies = await _applicationDbContext.ClientClaimPolicies.Where(x => x.ClientId == clientId).ToListAsync();
+
+            foreach (var policy in policies.Where(p => p.IsEnabled))
+            {
+                var hasClaim = userClaims.Any(c =>
+                    c.Type == policy.RequiredClaim &&
+                     policy.ClaimValue);
+
+                if (!hasClaim)
+                {
+                    // Người dùng không đạt yêu cầu
+                    context.IsActive = false;
+                    return;
+                }
+            }
 
             if (user != null)
             {
