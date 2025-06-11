@@ -13,7 +13,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["IdentityAuthen/WebApplication1/nuget.config", "IdentityAuthen/WebApplication1/"]
+COPY ${NUGET_CONFIG_PATH} ./nuget.config
 COPY ["IdentityAuthen/WebApplication1/Authen.csproj", "IdentityAuthen/WebApplication1/"]
 RUN dotnet restore "IdentityAuthen/WebApplication1/Authen.csproj" --configfile ./nuget.config
 
