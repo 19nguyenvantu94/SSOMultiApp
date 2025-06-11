@@ -1,6 +1,7 @@
 # See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
+ARG NUGET_CONFIG=nuget.config
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
@@ -14,7 +15,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["IdentityAuthen/WebApplication1/nuget.config", "IdentityAuthen/WebApplication1/"]
 COPY ["IdentityAuthen/WebApplication1/Authen.csproj", "IdentityAuthen/WebApplication1/"]
-RUN dotnet restore "IdentityAuthen/WebApplication1/Authen.csproj"
+RUN dotnet restore "IdentityAuthen/WebApplication1/Authen.csproj" --configfile ./nuget.config
 
 COPY IdentityAuthen/WebApplication1/ IdentityAuthen/WebApplication1/
 WORKDIR /src/WebApplication1
