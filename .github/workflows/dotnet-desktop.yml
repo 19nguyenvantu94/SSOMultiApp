@@ -46,9 +46,12 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
+        working-directory: ./IdentityAuthen
 
       - name: Build Solution
         run: dotnet build --no-restore --configuration Release
+        working-directory: ./IdentityAuthen
 
       - name: Run Unit Tests
         run: dotnet test --no-build --configuration Release --logger trx --results-directory "TestResults"
+        working-directory: ./IdentityAuthen
