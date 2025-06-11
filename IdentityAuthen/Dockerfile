@@ -13,10 +13,10 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 #COPY ["nuget.config", "."]
-COPY ["WebApplication1/Authen.csproj", "WebApplication1/"]
-RUN dotnet restore "WebApplication1/Authen.csproj"
+COPY ["IdentityAuthen/WebApplication1/Authen.csproj", "IdentityAuthen/WebApplication1/"]
+RUN dotnet restore "IdentityAuthen/WebApplication1/Authen.csproj"
 
-COPY . .
+COPY IdentityAuthen/WebApplication1/ IdentityAuthen/WebApplication1/
 WORKDIR /src/WebApplication1
 RUN dotnet build "Authen.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
