@@ -2,7 +2,7 @@ name: Web Identity Deploy
 
 on:
   push:
-    branches: [ "main" ]  # <--- thêm để chạy khi có push trực tiếp
+    branches: [ "main" ]
   pull_request:
     types: [closed]
     branches:
@@ -30,11 +30,36 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build container image
-      run: docker build -f IdentityAuthen/Dockerfile -t blazorwebidentity:$(echo $GITHUB_SHA | head -c7) .
+    - name: Create temporary NuGet config
+      run: |
+        mkdir -p ./temp-nuget
+        cat <<EOF > ./temp-nuget/nuget.config
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <packageSources>
+            <add key="github" value="https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" />
+            <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+          </packageSources>
+          <packageSourceCredentials>
+            <github>
+              <add key="Username" value="${{ github.repository_owner }}" />
+              <add key="ClearTextPassword" value="${{ secrets.LIB_TOKEN }}" />
+            </github>
+          </packageSourceCredentials>
+        </configuration>
+        EOF
 
-    - name: Tag Image  
-      run: docker tag blazorwebidentity:$(echo $GITHUB_SHA | head -c7) nguyenvantu/blazorwebidentity:$(echo $GITHUB_SHA | head -c7)
+    - name: Build container image
+      run: |
+        docker build \
+          --build-arg NUGET_CONFIG=./temp-nuget/nuget.config \
+          -f IdentityAuthen/Dockerfile \
+          -t blazorwebidentity:$(echo $GITHUB_SHA | head -c7) .
+
+    - name: Tag image  
+      run: |
+        docker tag blazorwebidentity:$(echo $GITHUB_SHA | head -c7) \
+        nguyenvantu/blazorwebidentity:$(echo $GITHUB_SHA | head -c7)
 
     - name: Push image to Docker Hub
       run: docker push nguyenvantu/blazorwebidentity:$(echo $GITHUB_SHA | head -c7)
@@ -49,6 +74,3 @@ jobs:
 
     - name: Deploy to DigitalOcean Kubernetes
       run: kubectl apply -k Authen/aspirate-output/blazorwebidentity/.
-
-    # - name: Verify deployment
-    #   run: kubectl rollout status deployment/webapp
