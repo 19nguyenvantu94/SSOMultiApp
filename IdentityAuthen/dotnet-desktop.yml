@@ -45,10 +45,13 @@ jobs:
           key: ${{ runner.os }}-dotnet-${{ env.DOTNET_VERSION }}-nuget
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore IdentityAuthen/IdentityAuthen.sln --configfile NuGet.config --disable-parallel
+        working-directory: ./IdentityAuthen
 
       - name: Build Solution
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build Id --no-restore --configuration Release
+        working-directory: ./IdentityAuthen
 
       - name: Run Unit Tests
         run: dotnet test --no-build --configuration Release --logger trx --results-directory "TestResults"
+        working-directory: ./IdentityAuthen
