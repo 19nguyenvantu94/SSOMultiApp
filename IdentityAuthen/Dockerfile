@@ -12,8 +12,9 @@ EXPOSE 8081
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
+ARG NUGET_CONFIG
 WORKDIR /src
-COPY ${NUGET_CONFIG_PATH} ./nuget.config
+COPY ${NUGET_CONFIG} ./nuget.config
 COPY ["IdentityAuthen/WebApplication1/Authen.csproj", "IdentityAuthen/WebApplication1/"]
 RUN dotnet restore "IdentityAuthen/WebApplication1/Authen.csproj" --configfile ./nuget.config
 
