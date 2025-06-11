@@ -19,7 +19,7 @@ COPY ["IdentityAuthen/WebApplication1/Authen.csproj", "IdentityAuthen/WebApplica
 RUN dotnet restore "IdentityAuthen/WebApplication1/Authen.csproj" --configfile ./nuget.config
 
 COPY IdentityAuthen/WebApplication1/ IdentityAuthen/WebApplication1/
-WORKDIR /src/WebApplication1
+WORKDIR "/src/IdentityAuthen/WebApplication1"
 RUN dotnet build "Authen.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
