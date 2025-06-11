@@ -13,11 +13,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 #COPY ["nuget.config", "."]
-COPY ["WebApplication1/Authen.csproj", "WebApplication1/"]
-RUN dotnet restore "./WebApplication1/Authen.csproj"
+COPY ["Authen.csproj", "."]
+RUN dotnet restore "Authen.csproj"
 COPY . .
 WORKDIR "/src/Authen"
-RUN dotnet build "./Authen.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "Authen.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
