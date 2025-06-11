@@ -1,6 +1,8 @@
 name: Web Identity Deploy
 
 on:
+  push:
+    branches: [ "main" ]  # <--- thêm để chạy khi có push trực tiếp
   pull_request:
     types: [closed]
     branches:
