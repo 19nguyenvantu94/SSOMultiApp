@@ -31,7 +31,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build container image
-      run: docker build -f Authen/Dockerfile -t blazorwebidentity:$(echo $GITHUB_SHA | head -c7) .
+      run: docker build -f IdentityAuthen/Dockerfile -t blazorwebidentity:$(echo $GITHUB_SHA | head -c7) .
 
     - name: Tag Image  
       run: docker tag blazorwebidentity:$(echo $GITHUB_SHA | head -c7) nguyenvantu/blazorwebidentity:$(echo $GITHUB_SHA | head -c7)
