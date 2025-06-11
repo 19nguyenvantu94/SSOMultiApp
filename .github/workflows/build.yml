@@ -1,8 +1,6 @@
 name: Build Code
 
-on:
-  push:
-    branches: [ "main" ]  # <--- thêm để chạy khi có push trực tiếp
+on:  # <--- thêm để chạy khi có push trực tiếp
   pull_request:
     branches: [ "main" ]
     types: [opened, synchronize, reopened]
