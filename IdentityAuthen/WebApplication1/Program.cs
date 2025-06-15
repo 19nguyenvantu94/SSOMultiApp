@@ -179,6 +179,8 @@ builder.Services.AddTransient<IIdentityProviderRepository, IdentityProviderRepos
 builder.Services.AddTransient<IKeyRepository, KeyRepository>();
 //builder.Services.AddTransient<ILogRepository, LogRepository<TLogDbContext>>();
 builder.Services.AddTransient<IDashboardRepository, DashboardRepository>();
+builder.Services.AddTransient<IClaimsPoliciesRepository, ClaimsPoliciesRepository>();
+
 
 
 //Services
@@ -190,6 +192,11 @@ builder.Services.AddTransient<IIdentityProviderService, IdentityProviderService>
 builder.Services.AddTransient<IPersistedGrantService, PersistedGrantService>();
 builder.Services.AddTransient<IKeyService, KeyService>();
 builder.Services.AddTransient<IDashboardService, DashboardService>();
+
+builder.Services.AddTransient<IClaimsPoliciesService, ClaimPoliciesService>();
+
+builder.Services.AddTransient<IClaimsPoliciesServiceResources, ClaimsPoliciesServiceResources>();
+
 //builder.Services.AddTransient<IIdentityService, IdentityService>();
 
 //Resources

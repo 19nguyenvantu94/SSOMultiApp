@@ -1,0 +1,72 @@
+﻿@using Authen.Models
+@using AuthenApi.Common
+@using AuthenApi.Dtos.Grant
+@using AuthenApi.Helpers
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+
+@model ClientsPoliciesDto
+@* @inject IViewLocalizer Localizer
+ *@
+@{
+    ViewBag.Title = "PageTitle";
+    Layout = "_Layout";
+}
+
+<div class="row">
+	<div class="col-12 text-center mt-1 mb-1">
+		<h2><span class="oi oi-tags" title="Client Policy" aria-hidden="true"></span> @Localizer["PageTitle"]</h2>
+	</div>
+
+	<div class="col-12">
+		<a  asp-action="ClientPoliciesById" class="btn btn-outline-primary mb-3"><span class="oi oi-plus"></span> @Localizer["ClientPolicy"]</a>
+	</div>
+
+	<div class="col-12">
+		@await Html.PartialAsync("Common/Search", new Search { Action = "ClientPolicies", Controller = "ClaimsPolicies" })
+	</div>
+
+
+    <div class="row table-responsive">
+        <div class="col-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>ClientId</th>
+                        <th>RequiredClaim</th>
+                        <th>ClaimValue</th>
+                        <th>IsEnabled</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var persistedGrant in Model.ClientsPolicies)
+                    {
+                        <tr>
+                            <td>
+                                <a  class="btn btn-primary" asp-action="ClientPoliciesById" asp-route-id="@persistedGrant.Id">@Localizer["TableButtonEdit"]</a>
+                                <a class="btn btn-danger"  asp-action="ClientPolicyDelete" asp-route-id="@UrlHelpers.QueryStringSafeHash(persistedGrant.Id.ToString())"><span class="oi oi-x"></span>
+                                    </a></td>
+
+                            <td><code>@persistedGrant.ClientId</code></td>
+                            <td>@persistedGrant.RequiredClaim</td>
+                            <td>@persistedGrant.ClaimValue</td>
+                            <td>@persistedGrant.IsEnabled</td>
+                       
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            @await Html.PartialAsync("Common/Pager", new Pager { Action = "ClaimsPolicies", PageSize = Model.PageSize, TotalCount = Model.TotalCount, Search = Model.Search })
+        </div>
+    </div>
+</div>
+
+ 

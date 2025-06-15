@@ -1,0 +1,119 @@
+﻿@using Authen.Models
+@using AuthenApi.Common
+@using AuthenApi.Dtos.Grant
+@using AuthenApi.Helpers
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+
+@model ClientClaimPolicy
+@inject IViewLocalizer Localizer
+
+@{
+	ViewBag.Title = Localizer["PageTitle"];
+	Layout = "_Layout";
+}
+
+<div class="row">
+	<div class="col-12">
+		<nav aria-label="breadcrumb">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a  asp-controller="ClaimsPolicies" asp-action="ClientPolicies">@Localizer["NavigationClaimsPolicies"]</a></li>
+				<li class="breadcrumb-item active" aria-current="page">@Model.ClientId</li>
+			</ol>
+		</nav>
+	</div>
+
+	<div class="col-12">
+		<h2>@Localizer["PageTitle"]</h2>
+	</div>
+</div>
+
+<form  asp-action="ClientPolicy" method="post" id="identity-resource-form">
+
+@* 	<div asp-validation-summary="All" class="text-danger"></div>
+ *@
+	<!--Hidden -->
+	<input type="hidden" asp-for="Id" />
+
+	<div class="card mt-3">
+		<h5 class="card-header">@Localizer["PanelTitle"]</h5>
+		<div class="card-body">
+			<!--Input - text -->
+			<div class="form-group row">
+				<label asp-for="ClientId" class="col-sm-3 col-form-label">
+@* 					@await Html.PartialAsync("IdentityResource/Section/Label", "Name")
+ *@				</label>
+				<div class="col-sm-9">
+					<input type="text" required class="form-control" asp-for="ClientId">
+					<span asp-validation-for="ClientId" class="text-danger"></span>
+				</div>
+			</div>
+
+			<!--Input - text -->
+			<div class="form-group row">
+				<label asp-for="RequiredClaim" class="col-sm-3 col-form-label">
+@* 					@await Html.PartialAsync("IdentityResource/Section/Label", "DisplayName")
+ *@				</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" asp-for="RequiredClaim">
+					 <span asp-validation-for="RequiredClaim" class="text-danger"></span>
+
+				</div>
+			</div>
+
+			<!--Input - text -->
+			<div class="form-group row">
+				<label asp-for="ClaimValue" class="col-sm-3 col-form-label">
+@* 					@await Html.PartialAsync("IdentityResource/Section/Label", "Description")
+ *@				</label>
+				@* <div class="col-sm-9">
+					<input type="text" class="form-control" asp-for="ClaimValue">
+				</div> *@
+				<div class="col-sm-9">
+					<toggle-button>
+						<input asp-for="ClaimValue" type="checkbox">
+					</toggle-button>
+				</div>
+			</div>
+
+			<!--Checkbox-->
+			<div class="form-group row">
+				<label asp-for="IsEnabled" class="col-sm-3 col-form-label">
+@* 					@await Html.PartialAsync("IdentityResource/Section/Label", "Enabled")
+ *@				</label>
+				<div class="col-sm-9">
+					<toggle-button>
+						<input asp-for="IsEnabled" type="checkbox">
+					</toggle-button>
+				</div>
+			</div>
+
+			<!--Button-->
+			<div class="form-group row">
+				<label class="col-sm-3 col-form-label">
+				</label>
+				<div class="col-sm-9">
+					<button type="submit" asp-action="ClientPolicy" id="identity-resource-save-button" class="btn btn-primary">@Localizer["ButtonSave"]</button>
+					@if (Model.Id != 0)
+					{
+						  <a class="btn btn-danger"  asp-action="ClientPolicyDelete" asp-route-id="@UrlHelpers.QueryStringSafeHash(Model.Id.ToString())"><span class="oi oi-x"></span>
+                                    </a>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+
+</form>
+
+@section scripts
+	{
+	<script>
+		$(function () {
+
+			//Disable enter for this form
+			FormMvc.disableEnter($('#identity-resource-form'));
+		});
+	</script>
+}

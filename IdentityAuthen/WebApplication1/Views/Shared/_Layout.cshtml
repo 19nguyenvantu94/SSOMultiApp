@@ -63,6 +63,8 @@
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" asp-controller="Grant" asp-action="PersistedGrants">@Localizer["LinkPersistedGrants"]</a>
                     <a class="dropdown-item" asp-controller="Key" asp-action="Keys">@Localizer["Keys"]</a>
+                    <a class="dropdown-item" asp-controller="ClaimsPolicies" asp-action="ClientPolicies">@Localizer["ClaimsPolicies"]</a>
+
                 </div>
             </div>
 
@@ -91,13 +93,14 @@
                 </div>
             </div>
 
-            <a class="menu-item my-2 btn btn-outline-primary" asp-action="Logout" asp-controller="Account">@Localizer["Signout"]</a>
 
             <!--Menu button - show in < MD -->
             <a class="my-2 btn btn-outline-primary menu-button" href="#">
                 <span class="oi oi-menu" title="menu" aria-hidden="true"></span> @Localizer["Menu"]
             </a>
         }
+
+        <a class="menu-item my-2 btn btn-outline-primary" asp-action="Logout" asp-controller="Account">@Localizer["Signout"]</a>
 
     </div>
 
