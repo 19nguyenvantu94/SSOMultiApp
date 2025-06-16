@@ -60,7 +60,7 @@ var configuration = builder.Configuration;
 
 builder.AddRedisDistributedCache("Redis");
 
-builder.AddRabbitMqEventBus("EventBus");
+//builder.AddRabbitMqEventBus("EventBus");
 builder.AddMySqlDbContext<ApplicationDbContext>("Identitydb");
 builder.AddMySqlDbContext<TenantStoreDbContext>("Identitydb");
 

@@ -59,12 +59,12 @@ namespace Authen.Repositories
 
             if (resource.Id == 0 )
             {
-                var existsWithClientName = await DbContext.Clients.Where(x => x.ClientId == resource.ClientId).SingleOrDefaultAsync();
+                var existsWithClientName = await DbContext.ClientClaimPolicies.Where(x => x.ClientId == resource.ClientId).SingleOrDefaultAsync();
                 return existsWithClientName == null;
             }
             else
             {
-                var existsWithClientName = await DbContext.Clients.Where(x => x.ClientId == resource.ClientId && x.Id != resource.Id).SingleOrDefaultAsync();
+                var existsWithClientName = await DbContext.ClientClaimPolicies.Where(x => x.ClientId == resource.ClientId && x.Id != resource.Id).SingleOrDefaultAsync();
                 return existsWithClientName == null;
             }
          }
