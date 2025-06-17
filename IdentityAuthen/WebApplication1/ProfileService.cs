@@ -95,7 +95,7 @@ namespace Authen
                 else
                 {
 
-                    var userProfile = await _applicationDbContext.UserProfiles.Where(x => x.Id == user.Id).FirstAsync();
+                    var userProfile = await _applicationDbContext.UserProfiles.Where(x => x.UserId == user.Id).FirstAsync();
 
                     if (userProfile == null)
                     {
