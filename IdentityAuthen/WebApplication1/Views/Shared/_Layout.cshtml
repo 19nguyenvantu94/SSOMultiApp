@@ -46,38 +46,42 @@
         <h3 class="menu-logo my-0 mr-md-auto font-weight-normal"><a class="logo" asp-area="" asp-controller="Home" asp-action="Index">Duende IdentityServer</a></h3>
 
         <!--Menu item -->
-        @if (User!.Identity!.IsAuthenticated && !string.IsNullOrEmpty(name) && (User.IsInRole(role: DefaultRoleNames.Administrator)))
+        @if (User!.Identity!.IsAuthenticated && !string.IsNullOrEmpty(name) )
         {
-            <!--Menu item -->
-            <div class="menu-item my-2 my-md-0 mr-md-3 dropdown">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                    @Localizer["TitleConfiguration"]
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" asp-controller="Configuration" asp-action="Clients">@Localizer["LinkClients"]</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" asp-controller="Configuration" asp-action="IdentityResources">@Localizer["LinkIdentityResources"]</a>
-                    <a class="dropdown-item" asp-controller="Configuration" asp-action="ApiResources">@Localizer["LinkApiResources"]</a>
-                    <a class="dropdown-item" asp-controller="Configuration" asp-action="ApiScopes">@Localizer["LinkApiScopes"]</a>
-                    <a class="dropdown-item" asp-controller="IdentityProvider" asp-action="IdentityProviders">@Localizer["LinkIdentityProviders"]</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" asp-controller="Grant" asp-action="PersistedGrants">@Localizer["LinkPersistedGrants"]</a>
-                    <a class="dropdown-item" asp-controller="Key" asp-action="Keys">@Localizer["Keys"]</a>
-                    <a class="dropdown-item" asp-controller="ClaimsPolicies" asp-action="ClientPolicies">@Localizer["ClaimsPolicies"]</a>
 
-                </div>
-            </div>
+            if (User.IsInRole(role: DefaultRoleNames.Administrator))
+            {
+                <!--Menu item -->
+                <div class="menu-item my-2 my-md-0 mr-md-3 dropdown">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        @Localizer["TitleConfiguration"]
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" asp-controller="Configuration" asp-action="Clients">@Localizer["LinkClients"]</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" asp-controller="Configuration" asp-action="IdentityResources">@Localizer["LinkIdentityResources"]</a>
+                        <a class="dropdown-item" asp-controller="Configuration" asp-action="ApiResources">@Localizer["LinkApiResources"]</a>
+                        <a class="dropdown-item" asp-controller="Configuration" asp-action="ApiScopes">@Localizer["LinkApiScopes"]</a>
+                        <a class="dropdown-item" asp-controller="IdentityProvider" asp-action="IdentityProviders">@Localizer["LinkIdentityProviders"]</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" asp-controller="Grant" asp-action="PersistedGrants">@Localizer["LinkPersistedGrants"]</a>
+                        <a class="dropdown-item" asp-controller="Key" asp-action="Keys">@Localizer["Keys"]</a>
+                        <a class="dropdown-item" asp-controller="ClaimsPolicies" asp-action="ClientPolicies">@Localizer["ClaimsPolicies"]</a>
 
-            <!--Menu item -->
-            <div class="menu-item my-2 my-md-0 mr-md-3 dropdown">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                    @Localizer["TitleUsermanagement"]
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" asp-controller="Identity" asp-action="Users">@Localizer["LinkUsers"]</a>
-                    <a class="dropdown-item" asp-controller="Identity" asp-action="Roles">@Localizer["LinkRoles"]</a>
+                    </div>
                 </div>
-            </div>
+
+                <!--Menu item -->
+                <div class="menu-item my-2 my-md-0 mr-md-3 dropdown">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        @Localizer["TitleUsermanagement"]
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" asp-controller="Identity" asp-action="Users">@Localizer["LinkUsers"]</a>
+                        <a class="dropdown-item" asp-controller="Identity" asp-action="Roles">@Localizer["LinkRoles"]</a>
+                    </div>
+                </div>
+            }
 
             <!--Menu item -->
             <div class="menu-item my-2 my-md-0 mr-md-3 dropdown">
@@ -98,9 +102,9 @@
             <a class="my-2 btn btn-outline-primary menu-button" href="#">
                 <span class="oi oi-menu" title="menu" aria-hidden="true"></span> @Localizer["Menu"]
             </a>
-        }
 
-        <a class="menu-item my-2 btn btn-outline-primary" asp-action="Logout" asp-controller="Account">@Localizer["Signout"]</a>
+            <a class="menu- my-2 btn btn-outline-primary" asp-action="Logout" asp-controller="Account">@Localizer["Signout"]</a>
+        }
 
     </div>
 
