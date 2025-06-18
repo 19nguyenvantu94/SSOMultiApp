@@ -32,19 +32,22 @@ namespace Authen
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            var subject = context.Subject ?? throw new ArgumentNullException(nameof(context.Subject));
 
-            var subjectId = subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
-            var clientId = context.Client.ClientId;
+            try
+            {
+                var subject = context.Subject ?? throw new ArgumentNullException(nameof(context.Subject));
 
-            var allowsClientIds = new List<string> { "webapp" };
+                var subjectId = subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
+                var clientId = context.Client.ClientId;
+
+                var allowsClientIds = new List<string> { "webapp" };
 
 
-            var user = await _userManager.FindByIdAsync(subjectId);
-            if (user == null)
-                throw new ArgumentException("Invalid subject identifier");
+                var user = await _userManager.FindByIdAsync(subjectId);
+                if (user == null)
+                    throw new ArgumentException("Invalid subject identifier");
 
-            var claims = new List<Claim>
+                var claims = new List<Claim>
             {
                 new Claim("sub",user.Id.ToString()),
                 new Claim(JwtClaimTypes.PreferredUserName, user.UserName!),
@@ -57,65 +60,70 @@ namespace Authen
 
             };
 
-            if (_userManager.SupportsUserEmail)
-            {
-                claims.AddRange(new[]
+                if (_userManager.SupportsUserEmail)
                 {
+                    claims.AddRange(new[]
+                    {
                     new Claim(JwtClaimTypes.Email, user.Email),
                     new Claim(JwtClaimTypes.EmailVerified, user.EmailConfirmed ? "true" : "false", ClaimValueTypes.Boolean)
                 });
-            }
+                }
 
-            if (_userManager.SupportsUserPhoneNumber && !string.IsNullOrWhiteSpace(user.PhoneNumber))
-            {
-                claims.AddRange(new[]
+                if (_userManager.SupportsUserPhoneNumber && !string.IsNullOrWhiteSpace(user.PhoneNumber))
                 {
+                    claims.AddRange(new[]
+                    {
                     new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber),
                     new Claim(JwtClaimTypes.PhoneNumberVerified, user.PhoneNumberConfirmed ? "true" : "false", ClaimValueTypes.Boolean)
                 });
-            }
-
-            if (!string.IsNullOrEmpty(user.AvatarUrl))
-            {
-                claims.Add(new Claim("avatar", user.AvatarUrl!));
-
-            }
-
-            if (user.UserType == DefaultRoleNames.Administrator && allowsClientIds.Contains(clientId))
-            {
-
-                UserProfileViewModel dataCache = await _redisUserRepository.GetUserProfileAsync(Guid.Parse(subjectId));
-
-                if (dataCache != null)
-                {
-                    claims.Add(new Claim("isDarkMode", dataCache!.IsDarkMode ? "true" : "false", ClaimValueTypes.Boolean));
-                    claims.Add(new Claim("isNavOpen", dataCache!.IsNavOpen ? "true" : "false", ClaimValueTypes.Boolean));
-                    claims.Add(new Claim("lastPageVisited", dataCache.LastPageVisited));
                 }
-                else
+
+                if (!string.IsNullOrEmpty(user.AvatarUrl))
+                {
+                    claims.Add(new Claim("avatar", user.AvatarUrl!));
+
+                }
+
+                if (user.UserType == DefaultRoleNames.Administrator && allowsClientIds.Contains(clientId))
                 {
 
-                    var userProfile = await _applicationDbContext.UserProfiles.Where(x => x.UserId == user.Id).FirstAsync();
+                    UserProfileViewModel dataCache = await _redisUserRepository.GetUserProfileAsync(Guid.Parse(subjectId));
 
-                    if (userProfile == null)
+                    if (dataCache != null)
                     {
-                        claims.Add(new Claim("isDarkMode", "false", ClaimValueTypes.Boolean));
-                        claims.Add(new Claim("isNavOpen", "true", ClaimValueTypes.Boolean));
-                        claims.Add(new Claim("lastPageVisited", "/dashboard"));
+                        claims.Add(new Claim("isDarkMode", dataCache!.IsDarkMode ? "true" : "false", ClaimValueTypes.Boolean));
+                        claims.Add(new Claim("isNavOpen", dataCache!.IsNavOpen ? "true" : "false", ClaimValueTypes.Boolean));
+                        claims.Add(new Claim("lastPageVisited", dataCache.LastPageVisited));
                     }
                     else
                     {
-                        claims.Add(new Claim("isDarkMode", userProfile.IsDarkMode ? "true" : "false", ClaimValueTypes.Boolean));
-                        claims.Add(new Claim("isNavOpen", userProfile.IsNavOpen ? "true" : "false", ClaimValueTypes.Boolean));
-                        claims.Add(new Claim("lastPageVisited", userProfile.LastPageVisited));
+                        var userProfile = await _applicationDbContext.UserProfiles.Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
+
+                        if (userProfile == null)
+                        {
+                            claims.Add(new Claim("isDarkMode", "false", ClaimValueTypes.Boolean));
+                            claims.Add(new Claim("isNavOpen", "true", ClaimValueTypes.Boolean));
+                            claims.Add(new Claim("lastPageVisited", "/dashboard"));
+                        }
+                        else
+                        {
+                            claims.Add(new Claim("isDarkMode", userProfile.IsDarkMode ? "true" : "false", ClaimValueTypes.Boolean));
+                            claims.Add(new Claim("isNavOpen", userProfile.IsNavOpen ? "true" : "false", ClaimValueTypes.Boolean));
+                            claims.Add(new Claim("lastPageVisited", userProfile.LastPageVisited));
+                        }
+
                     }
 
+                    claims = await GetClaimsFromUser(user, claims);
+
+                    context.IssuedClaims = claims.ToList();
+
                 }
-
-                claims = await GetClaimsFromUser(user, claims);
-
-                context.IssuedClaims = claims.ToList();
-
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
             }
         }
 
