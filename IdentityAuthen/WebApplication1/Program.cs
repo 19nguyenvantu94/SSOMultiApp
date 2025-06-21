@@ -74,6 +74,13 @@ builder.Services.AddControllers(options =>
     options.Conventions.Add(new RouteTokenTransformerConvention(parameterTransformer));
 });
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(44360, listenOptions =>
+    {
+        listenOptions.UseHttps("identityserver.pfx", "nguyenvantu123");
+    });
+});
 //builder.Services.AddAuthorizationPolicies(options.Admin, Security.AuthorizationConfigureAction); 
 builder.Services.AddAuthorization(options =>
 {
@@ -321,6 +328,16 @@ app.MapDefaultControllerRoute();
 
 app.UseDeveloperExceptionPage();
 app.UseMultiTenant();
+
+app.Use((context, next) =>
+{
+    if (context.Request.Host.Host != "localhost")
+        return context.Response.WriteAsync("Bad request");
+
+    return next();
+});
+
+
 //app.UseMiddleware<UserSessionMiddleware>();
 
 using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
