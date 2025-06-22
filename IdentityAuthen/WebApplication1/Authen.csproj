@@ -51,6 +51,9 @@
     <None Update="172.17.208.1.pfx">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+    <None Update="identityserver.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
