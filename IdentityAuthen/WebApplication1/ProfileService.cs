@@ -134,23 +134,23 @@ namespace Authen
             var subjectId = subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
             var user = await _userManager.FindByIdAsync(subjectId);
 
-            var clientId = context.Client.ClientId;
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            var policies = await _applicationDbContext.ClientClaimPolicies.Where(x => x.ClientId == clientId).ToListAsync();
+            //var clientId = context.Client.ClientId;
+            //var userClaims = await _userManager.GetClaimsAsync(user);
+            //var policies = await _applicationDbContext.ClientClaimPolicies.Where(x => x.ClientId == clientId).ToListAsync();
 
-            foreach (var policy in policies.Where(p => p.IsEnabled))
-            {
-                var hasClaim = userClaims.Any(c =>
-                    c.Type == policy.RequiredClaim &&
-                     policy.ClaimValue);
+            //foreach (var policy in policies.Where(p => p.IsEnabled))
+            //{
+            //    var hasClaim = userClaims.Any(c =>
+            //        c.Type == policy.RequiredClaim &&
+            //         policy.ClaimValue);
 
-                if (!hasClaim)
-                {
-                    // Người dùng không đạt yêu cầu
-                    context.IsActive = false;
-                    return;
-                }
-            }
+            //    if (!hasClaim)
+            //    {
+            //        // Người dùng không đạt yêu cầu
+            //        context.IsActive = false;
+            //        return;
+            //    }
+            //}
 
             if (user != null)
             {
