@@ -47,4 +47,10 @@
     <PackageReference Include="StackExchange.Redis" Version="2.8.37" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="172.17.208.1.pfx">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

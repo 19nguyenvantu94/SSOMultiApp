@@ -1,4 +1,4 @@
-using Authen;
+﻿using Authen;
 using Authen.Authorization;
 using Authen.Configuration.Email;
 using Authen.Constants;
@@ -39,6 +39,7 @@ using SharedLib.DistributedRedis;
 using SharedLib.MySQL;
 using System.Diagnostics;
 using System.Globalization;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,6 +75,18 @@ builder.Services.AddControllers(options =>
     options.Conventions.Add(new RouteTokenTransformerConvention(parameterTransformer));
 });
 
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    //options.ListenAnyIP(44360, listenOptions =>
+//    //{
+//    //    listenOptions.UseHttps("identityserver.pfx", "nguyenvantu123");
+//    //});
+
+//    options.Listen(IPAddress.Any, 44444, listenOptions =>
+//    {
+//        options.Listen(IPAddress.Any, 44444); // 🔥 Không dùng HTTPS
+//    });
+//});
 //builder.Services.AddAuthorizationPolicies(options.Admin, Security.AuthorizationConfigureAction); 
 builder.Services.AddAuthorization(options =>
 {
@@ -321,6 +334,17 @@ app.MapDefaultControllerRoute();
 
 app.UseDeveloperExceptionPage();
 app.UseMultiTenant();
+
+//app.Use((context, next) =>
+//{
+//    var allowedHosts = new[] { "localhost", "172.17.208.1" };
+//    if (!allowedHosts.Contains(context.Request.Host.Host))
+//        return context.Response.WriteAsync("Bad request");
+
+//    return next();
+//});
+
+
 //app.UseMiddleware<UserSessionMiddleware>();
 
 using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
