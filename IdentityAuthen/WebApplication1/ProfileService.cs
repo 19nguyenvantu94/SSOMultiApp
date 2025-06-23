@@ -149,20 +149,29 @@ namespace Authen
             var userClaims = await _userManager.GetClaimsAsync(user);
             var policies = await _applicationDbContext.ClientClaimPolicies
                 .Where(x => x.ClientId == clientId && x.IsEnabled)
+                .Select(x=>x.RequiredClaim)
                 .ToListAsync();
 
-            foreach (var policy in policies)
-            {
-                var hasClaim = userClaims.Any(c =>
-                    c.Type == policy.RequiredClaim &&
-                    c.Value == policy.ClaimValue.ToString());
+            var checkClaims = userClaims.ToList().Where(x=> policies.Contains(x.ValueType)).ToList();
 
-                if (!hasClaim)
-                {
-                    context.IsActive = false;
-                    return;
-                }
+            if (checkClaims.Count == 0)
+            {
+                context.IsActive = false;
+                return;
             }
+
+            //foreach (var policy in policies)
+            //{
+            //    var hasClaim = userClaims.Any(c =>
+            //        c.Type == policy.RequiredClaim &&
+            //        c.Value == policy.ClaimValue.ToString());
+
+            //    if (!hasClaim)
+            //    {
+            //        context.IsActive = false;
+            //        return;
+            //    }
+            //}
 
             // Kiểm tra security_stamp
             if (_userManager.SupportsUserSecurityStamp)
