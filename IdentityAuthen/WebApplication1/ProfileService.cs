@@ -130,46 +130,57 @@ namespace Authen
         public async Task IsActiveAsync(IsActiveContext context)
         {
             var subject = context.Subject ?? throw new ArgumentNullException(nameof(context.Subject));
+            var subjectId = subject.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
 
-            var subjectId = subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
-            var user = await _userManager.FindByIdAsync(subjectId);
-
-            //var clientId = context.Client.ClientId;
-            //var userClaims = await _userManager.GetClaimsAsync(user);
-            //var policies = await _applicationDbContext.ClientClaimPolicies.Where(x => x.ClientId == clientId).ToListAsync();
-
-            //foreach (var policy in policies.Where(p => p.IsEnabled))
-            //{
-            //    var hasClaim = userClaims.Any(c =>
-            //        c.Type == policy.RequiredClaim &&
-            //         policy.ClaimValue);
-
-            //    if (!hasClaim)
-            //    {
-            //        // Người dùng không đạt yêu cầu
-            //        context.IsActive = false;
-            //        return;
-            //    }
-            //}
-
-            if (user != null)
+            if (subjectId == null)
             {
-                if (_userManager.SupportsUserSecurityStamp)
+                context.IsActive = false;
+                return;
+            }
+
+            var user = await _userManager.FindByIdAsync(subjectId);
+            if (user == null)
+            {
+                context.IsActive = false;
+                return;
+            }
+
+            var clientId = context.Client.ClientId;
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var policies = await _applicationDbContext.ClientClaimPolicies
+                .Where(x => x.ClientId == clientId && x.IsEnabled)
+                .ToListAsync();
+
+            foreach (var policy in policies)
+            {
+                var hasClaim = userClaims.Any(c =>
+                    c.Type == policy.RequiredClaim &&
+                    c.Value == policy.ClaimValue.ToString());
+
+                if (!hasClaim)
                 {
-                    var security_stamp = subject.Claims.Where(c => c.Type == "security_stamp").Select(c => c.Value).SingleOrDefault();
-                    if (security_stamp != null)
+                    context.IsActive = false;
+                    return;
+                }
+            }
+
+            // Kiểm tra security_stamp
+            if (_userManager.SupportsUserSecurityStamp)
+            {
+                var securityStamp = subject.Claims.FirstOrDefault(c => c.Type == "security_stamp")?.Value;
+                if (securityStamp != null)
+                {
+                    var dbSecurityStamp = await _userManager.GetSecurityStampAsync(user);
+                    if (dbSecurityStamp != securityStamp)
                     {
-                        var db_security_stamp = await _userManager.GetSecurityStampAsync(user);
-                        if (db_security_stamp != security_stamp)
-                            return;
+                        context.IsActive = false;
+                        return;
                     }
                 }
-
-                context.IsActive =
-                    !user.LockoutEnabled ||
-                    !user.LockoutEnd.HasValue ||
-                    user.LockoutEnd <= DateTime.UtcNow;
             }
+
+            // Cuối cùng gán context.IsActive
+            context.IsActive = !user.LockoutEnabled || !user.LockoutEnd.HasValue || user.LockoutEnd <= DateTime.UtcNow;
         }
 
         private async Task<List<Claim>> GetClaimsFromUser(ApplicationUser user, List<Claim> claims)
