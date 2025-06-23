@@ -1,24 +1,25 @@
-﻿using Finbuckle.MultiTenant;
+﻿using Authen.Interfaces;
+using Authen.Models;
+using Authen.Users.Constants;
+using Authen.Users.Models;
+using Duende.IdentityServer.EntityFramework.Entities;
+using Duende.IdentityServer.EntityFramework.Interfaces;
+using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
 using Finbuckle.MultiTenant.EntityFrameworkCore;
-using Authen.Users.Constants;
-using Microsoft.EntityFrameworkCore.Storage;
-using Authen.Interfaces;
-using Duende.IdentityServer.EntityFramework.Entities;
-using System.Reflection;
-using Authen.Users.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Security.Claims;
-using Duende.IdentityServer.EntityFramework.Interfaces;
-using Authen.Models;
 
 namespace Authen.Data
 {
 
     public class ApplicationDbContext : MultiTenantIdentityDbContext<ApplicationUser, ApplicationRole, Guid,
         ApplicationUserClaim, ApplicationUserRole, IdentityUserLogin<Guid>,
-        ApplicationRoleClaim, IdentityUserToken<Guid>>, IMultiTenantDbContext, IPersistedGrantDbContext,IConfigurationDbContext
+        ApplicationRoleClaim, IdentityUserToken<Guid>>, IMultiTenantDbContext, IPersistedGrantDbContext, IConfigurationDbContext
     {
         public ApplicationDbContext(IMultiTenantContextAccessor multiTenantContextAccessor, DbContextOptions<ApplicationDbContext> options) : base(multiTenantContextAccessor, options)
         {
@@ -73,7 +74,9 @@ namespace Authen.Data
         public DbSet<ApiScope> ApiScopes { get; set; }
         public DbSet<IdentityProvider> IdentityProviders { get; set; }
 
-        public DbSet<ClientClaimPolicy>  ClientClaimPolicies { get; set; }
+        public DbSet<ClientClaimPolicy> ClientClaimPolicies { get; set; }
+
+        public DbSet<ClientClaimPolicyRole> ClientClaimPolicyRoles { get; set; }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
         {
@@ -157,6 +160,19 @@ namespace Authen.Data
             //builder.Entity<TenantSetting>().ToTable("TenantSettings").HasNoKey();
 
             builder.Entity<DeviceFlowCodes>().ToTable("DeviceFlowCodes").HasKey(x => x.DeviceCode);
+
+            builder.Entity<ClientClaimPolicyRole>()
+      .HasKey(x => new { x.ClientClaimPolicyId, x.RoleId });
+
+            builder.Entity<ClientClaimPolicyRole>()
+                .HasOne(x => x.ClientClaimPolicy)
+                .WithMany(x => x.PolicyRoles)
+                .HasForeignKey(x => x.ClientClaimPolicyId);
+
+            builder.Entity<ClientClaimPolicyRole>()
+                .HasOne(x => x.Role)
+                .WithMany()
+                .HasForeignKey(x => x.RoleId);
 
             SetGlobalQueryFilters(builder);
 

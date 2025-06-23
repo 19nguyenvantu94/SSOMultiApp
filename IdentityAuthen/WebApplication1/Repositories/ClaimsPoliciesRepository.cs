@@ -26,7 +26,7 @@ namespace Authen.Repositories
         {
             var pagedList = new ClientsPoliciesDto();
 
-            Expression<Func<ClientClaimPolicy, bool>> searchCondition = x => x.ClientId.Contains(search);
+            Expression<Func<ClientClaimPolicy, bool>> searchCondition = x => x.Client.ClientId.Contains(search);
             var clients = await DbContext.ClientClaimPolicies
                 .WhereIf(!string.IsNullOrEmpty(search), searchCondition)
                 .PageBy(x => x.Id, page, pageSize)
@@ -59,12 +59,12 @@ namespace Authen.Repositories
 
             if (resource.Id == 0 )
             {
-                var existsWithClientName = await DbContext.ClientClaimPolicies.Where(x => x.ClientId == resource.ClientId).SingleOrDefaultAsync();
+                var existsWithClientName = await DbContext.ClientClaimPolicies.Where(x => x.IdClient == resource.IdClient).SingleOrDefaultAsync();
                 return existsWithClientName == null;
             }
             else
             {
-                var existsWithClientName = await DbContext.ClientClaimPolicies.Where(x => x.ClientId == resource.ClientId && x.Id != resource.Id).SingleOrDefaultAsync();
+                var existsWithClientName = await DbContext.ClientClaimPolicies.Where(x => x.IdClient == resource.IdClient && x.Id != resource.Id).SingleOrDefaultAsync();
                 return existsWithClientName == null;
             }
          }

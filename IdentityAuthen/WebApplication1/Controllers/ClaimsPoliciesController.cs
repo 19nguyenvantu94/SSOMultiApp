@@ -65,7 +65,7 @@ namespace Authen.Controllers
                 await _claimPoliciesService.UpdateClaimsPolicies(identityResource);
             }
 
-            SuccessNotification(string.Format(_localizer["SuccessAddIdentityResource"], identityResource.ClientId), _localizer["SuccessTitle"]);
+            SuccessNotification(string.Format(_localizer["SuccessAddIdentityResource"], identityResource.Client.ClientId), _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ClientPoliciesById), new { Id = identityResource.Id });
         }

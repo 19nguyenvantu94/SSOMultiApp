@@ -146,50 +146,11 @@ namespace Authen
             }
 
             var clientId = context.Client.ClientId;
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            var policies = await _applicationDbContext.ClientClaimPolicies
-                .Where(x => x.ClientId == clientId && x.IsEnabled)
-                .Select(x=>x.RequiredClaim)
-                .ToListAsync();
+            var allowedRoleIds = await _applicationDbContext.ClientClaimPolicies
+        .Where(x => x.Client.ClientId == clientId)
+        .SelectMany(p => p.PolicyRoles.Select(pr => pr.RoleId))
+        .ToListAsync();
 
-            var checkClaims = userClaims.ToList().Where(x=> policies.Contains(x.ValueType)).ToList();
-
-            if (checkClaims.Count == 0)
-            {
-                context.IsActive = false;
-                return;
-            }
-
-            //foreach (var policy in policies)
-            //{
-            //    var hasClaim = userClaims.Any(c =>
-            //        c.Type == policy.RequiredClaim &&
-            //        c.Value == policy.ClaimValue.ToString());
-
-            //    if (!hasClaim)
-            //    {
-            //        context.IsActive = false;
-            //        return;
-            //    }
-            //}
-
-            // Kiểm tra security_stamp
-            if (_userManager.SupportsUserSecurityStamp)
-            {
-                var securityStamp = subject.Claims.FirstOrDefault(c => c.Type == "security_stamp")?.Value;
-                if (securityStamp != null)
-                {
-                    var dbSecurityStamp = await _userManager.GetSecurityStampAsync(user);
-                    if (dbSecurityStamp != securityStamp)
-                    {
-                        context.IsActive = false;
-                        return;
-                    }
-                }
-            }
-
-            // Cuối cùng gán context.IsActive
-            context.IsActive = !user.LockoutEnabled || !user.LockoutEnd.HasValue || user.LockoutEnd <= DateTime.UtcNow;
         }
 
         private async Task<List<Claim>> GetClaimsFromUser(ApplicationUser user, List<Claim> claims)

@@ -35,14 +35,12 @@
                     <tr>
                         <th></th>
                         <th>ClientId</th>
-                        <th>RequiredClaim</th>
-                        <th>ClaimValue</th>
-                        <th>IsEnabled</th>
+                        <th>Roles</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @foreach (var persistedGrant in Model.ClientsPolicies)
+                    @* @foreach (var persistedGrant in Model.ClientsPolicies)
                     {
                         <tr>
                             <td>
@@ -50,13 +48,12 @@
                                 <a class="btn btn-danger"  asp-action="ClientPolicyDelete" asp-route-id="@UrlHelpers.QueryStringSafeHash(persistedGrant.Id.ToString())"><span class="oi oi-x"></span>
                                     </a></td>
 
-                            <td><code>@persistedGrant.ClientId</code></td>
-                            <td>@persistedGrant.RequiredClaim</td>
-                            <td>@persistedGrant.ClaimValue</td>
-                            <td>@persistedGrant.IsEnabled</td>
+                            <td><code>@persistedGrant.Client.ClientId</code></td>
+                            <td> @string.Join(";",@persistedGrant.PolicyRoles.Select(x=>x.Role.Name).ToList())</td>
+                      
                        
                         </tr>
-                    }
+                    } *@
                 </tbody>
             </table>
         </div>

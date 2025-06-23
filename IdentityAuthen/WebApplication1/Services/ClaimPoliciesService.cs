@@ -61,7 +61,7 @@ namespace AuthenApi.Services
             var canInsert = await CanInsertClaimsPolicies(identityResource);
             if (!canInsert)
             {
-                throw new UserFriendlyViewException(string.Format(IClaimsPoliciesServiceResources.ClaimsPoliciesExistsKey().Description, identityResource.ClientId), IClaimsPoliciesServiceResources.ClaimsPoliciesExistsKey().Description, identityResource);
+                throw new UserFriendlyViewException(string.Format(IClaimsPoliciesServiceResources.ClaimsPoliciesExistsKey().Description, identityResource.Client.ClientId), IClaimsPoliciesServiceResources.ClaimsPoliciesExistsKey().Description, identityResource);
             }
 
             var saved = await ClientRepository.AddClaimsPoliciesAsync(identityResource);
@@ -94,7 +94,7 @@ namespace AuthenApi.Services
             var canInsert = await CanInsertClaimsPolicies(identityResource);
             if (!canInsert)
             {
-                throw new UserFriendlyViewException(string.Format(IClaimsPoliciesServiceResources.ClaimsPoliciesExistsValue().Description, identityResource.ClientId), IClaimsPoliciesServiceResources.ClaimsPoliciesExistsValue().Description, identityResource);
+                throw new UserFriendlyViewException(string.Format(IClaimsPoliciesServiceResources.ClaimsPoliciesExistsValue().Description, identityResource.Client.ClientId), IClaimsPoliciesServiceResources.ClaimsPoliciesExistsValue().Description, identityResource);
             }
 
             var updated = await ClientRepository.UpdateIdentityResourceAsync(identityResource);
