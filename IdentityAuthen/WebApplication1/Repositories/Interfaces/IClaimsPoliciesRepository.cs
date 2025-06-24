@@ -16,11 +16,13 @@ namespace AuthenApi.Repositories.Interfaces
 
  
         Task<int> SaveAllChangesAsync();
-        Task<bool> CanInsertClaimsPoliciesAsync(ClientClaimPolicy resource);
-        Task<int> AddClaimsPoliciesAsync(ClientClaimPolicy resource);
-        Task<ClientClaimPolicy> ClaimsPoliciesById(int identityResourcePropertiesDto);
-        Task<int> UpdateIdentityResourceAsync(ClientClaimPolicy resource);
-        Task<int> DeleteEntity(ClientClaimPolicy clientEntity);
+        Task<bool> CanInsertClaimsPoliciesAsync(ClientsIdDto resource);
+        Task<int> AddClaimsPoliciesAsync(ClientsIdDto resource);
+        Task<ClientsIdDto> ClaimsPoliciesById(int identityResourcePropertiesDto);
+        Task<int> UpdateIdentityResourceAsync(ClientsIdDto resource);
+        Task<int> DeleteEntity(ClientClaimPolicy clientClaimPolicy);
+
+        Task<ClientClaimPolicy?> CheckForDelete(int id);
 
         bool AutoSaveChanges { get; set; }
     }

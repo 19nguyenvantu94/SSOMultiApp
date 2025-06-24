@@ -47,7 +47,7 @@ namespace AuthenApi.Services
             return await ClientRepository.GetClientPoliciesAsync(search, page, pageSize);
         }
 
-        public ClientClaimPolicy BuildIdentityResourceViewModel(ClientClaimPolicy identityResource)
+        public ClientsIdDto BuildIdentityResourceViewModel(ClientsIdDto identityResource)
         {
 
             //ComboBoxHelpers.PopulateValuesToList(identityResource.UserClaimsItems, identityResource.UserClaims);
@@ -56,12 +56,12 @@ namespace AuthenApi.Services
 
         }
 
-        public async Task<int> AddClaimsPolicies(ClientClaimPolicy identityResource)
+        public async Task<int> AddClaimsPolicies(ClientsIdDto identityResource)
         {
             var canInsert = await CanInsertClaimsPolicies(identityResource);
             if (!canInsert)
             {
-                throw new UserFriendlyViewException(string.Format(IClaimsPoliciesServiceResources.ClaimsPoliciesExistsKey().Description, identityResource.Client.ClientId), IClaimsPoliciesServiceResources.ClaimsPoliciesExistsKey().Description, identityResource);
+                throw new UserFriendlyViewException(string.Format(IClaimsPoliciesServiceResources.ClaimsPoliciesExistsKey().Description, identityResource.ClientId), IClaimsPoliciesServiceResources.ClaimsPoliciesExistsKey().Description, identityResource);
             }
 
             var saved = await ClientRepository.AddClaimsPoliciesAsync(identityResource);
@@ -71,7 +71,7 @@ namespace AuthenApi.Services
             return saved;
         }
 
-        public virtual async Task<bool> CanInsertClaimsPolicies(ClientClaimPolicy identityResourcePropertiesDto)
+        public virtual async Task<bool> CanInsertClaimsPolicies(ClientsIdDto identityResourcePropertiesDto)
         {
 
             return await ClientRepository.CanInsertClaimsPoliciesAsync(identityResourcePropertiesDto);
@@ -79,7 +79,7 @@ namespace AuthenApi.Services
 
 
 
-        public async Task<ClientClaimPolicy> GetClaimsPolicies(int identityResourceId)
+        public async Task<ClientsIdDto> GetClaimsPolicies(int identityResourceId)
         {
             return await ClientRepository.ClaimsPoliciesById(identityResourceId);
         }
@@ -89,12 +89,12 @@ namespace AuthenApi.Services
         //    throw new NotImplementedException();
         //}
 
-        public async Task<int> UpdateClaimsPolicies(ClientClaimPolicy identityResource)
+        public async Task<int> UpdateClaimsPolicies(ClientsIdDto identityResource)
         {
             var canInsert = await CanInsertClaimsPolicies(identityResource);
             if (!canInsert)
             {
-                throw new UserFriendlyViewException(string.Format(IClaimsPoliciesServiceResources.ClaimsPoliciesExistsValue().Description, identityResource.Client.ClientId), IClaimsPoliciesServiceResources.ClaimsPoliciesExistsValue().Description, identityResource);
+                throw new UserFriendlyViewException(string.Format(IClaimsPoliciesServiceResources.ClaimsPoliciesExistsValue().Description, identityResource.ClientId), IClaimsPoliciesServiceResources.ClaimsPoliciesExistsValue().Description, identityResource);
             }
 
             var updated = await ClientRepository.UpdateIdentityResourceAsync(identityResource);
@@ -106,7 +106,7 @@ namespace AuthenApi.Services
 
         public async Task<int> ClientPolicyDelete(int id)
         {
-            var clientEntity = await ClientRepository.ClaimsPoliciesById(id);
+            var clientEntity = await ClientRepository.CheckForDelete(id);
 
             if (clientEntity == null)
             {

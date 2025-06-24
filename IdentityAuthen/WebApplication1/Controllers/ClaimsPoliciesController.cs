@@ -4,6 +4,7 @@
 using Authen.Models;
 using Authen.Users.Constants;
 using AuthenApi.Dtos.Configuration;
+using AuthenApi.Dtos.Grant;
 using AuthenApi.ExceptionHandling;
 using AuthenApi.Helpers;
 using AuthenApi.Services;
@@ -44,7 +45,7 @@ namespace Authen.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ClientPolicy(ClientClaimPolicy identityResource)
+        public async Task<IActionResult> ClientPolicy(ClientsIdDto identityResource)
         {
             if (!ModelState.IsValid)
             {
@@ -65,7 +66,7 @@ namespace Authen.Controllers
                 await _claimPoliciesService.UpdateClaimsPolicies(identityResource);
             }
 
-            SuccessNotification(string.Format(_localizer["SuccessAddIdentityResource"], identityResource.Client.ClientId), _localizer["SuccessTitle"]);
+            SuccessNotification(string.Format(_localizer["SuccessAddIdentityResource"], identityResource.ClientId), _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(ClientPoliciesById), new { Id = identityResource.Id });
         }
@@ -78,13 +79,15 @@ namespace Authen.Controllers
                 return NotFound();
             }
 
-            if (id == default)
-            {
-                var identityResourceDto = new ClientClaimPolicy();
-                return View(identityResourceDto);
-            }
-
             int.TryParse(id, out var identityResourceId);
+
+            //if (id == default)
+            //{
+            //    var createValue = await _claimPoliciesService.GetClaimsPolicies(identityResourceId);
+            //    return View(createValue);
+            //}
+
+         
             var identityResource = await _claimPoliciesService.GetClaimsPolicies(identityResourceId);
 
             return View(identityResource);
