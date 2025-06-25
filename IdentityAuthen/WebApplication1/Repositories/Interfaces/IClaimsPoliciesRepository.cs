@@ -24,6 +24,8 @@ namespace AuthenApi.Repositories.Interfaces
 
         Task<ClientClaimPolicy?> CheckForDelete(int id);
 
+        Task<int> DeleteEntityRole(int roleId);
+
         bool AutoSaveChanges { get; set; }
     }
 }

@@ -109,16 +109,11 @@ namespace Authen.Repositories
 
             await DbContext.ClientClaimPolicyRoles.AddAsync(clientClaimPolicyRole);
 
-            return await AutoSaveChangesAsync();
+            return dataAdd.Entity.Id;
         }
 
         public async Task<ClientsIdDto> ClaimsPoliciesById(int identityResourcePropertiesDto)
         {
-            //var data = await DbContext.ClientClaimPolicies
-            //     .Where(x => x.Id == identityResourcePropertiesDto)
-            //     .Include(x => x.Client)
-            //     .Include(x => x.PolicyRoles)
-            //     .FirstOrDefaultAsync();
 
             var data = await (
             from policy in DbContext.ClientClaimPolicies
@@ -137,27 +132,39 @@ namespace Authen.Repositories
                 data = new ClientsIdDto();
             }
 
+
             var getAllClients = await DbContext.ClientClaimPolicies.Select(x => x.IdClient).ToListAsync();
 
-            var getAllRoles = await DbContext.ClientClaimPolicyRoles.Select(x => x.RoleId).ToListAsync();
-
             // Fix for CS7036: Ensure the SelectItem constructor is called with the required parameters 'id' and 'text'.
-
-            if (data.Id != 0)
-            {
-                var dataPolicyRoles = DbContext.ClientClaimPolicyRoles.Where(x => x.ClientClaimPolicyId == data.Id).Include(x => x.Role).Select(x => new SelectItem(x.Role.Id.ToString(), x.Role!.Name)).ToList();
-            }
 
             data.ClientsList = DbContext.Clients
                 .Where(x => !getAllClients.Contains(x.Id))
                 .Select(c => new SelectItem(c.Id.ToString(), c.ClientId))
                 .ToList();
-            data.RolesList = DbContext.Roles
-               .Where(x => !getAllRoles.Contains(x.Id))
-               .Select(r => new SelectItem(r.Id.ToString(), r.Name))
-               .ToList();
 
+            if (data.Id != 0)
+            {
+                var dataPolicyRoles = DbContext.ClientClaimPolicyRoles.Where(x => x.ClientClaimPolicyId == data.Id).Include(x => x.Role).Select(x => new SelectItem(x.Id.ToString(), x.Role!.Name)).ToList();
 
+                data.Roles = dataPolicyRoles.ToList();
+
+                var dataPolicyRolesRemove = DbContext.ClientClaimPolicyRoles.Where(x => x.ClientClaimPolicyId == data.Id).Include(x => x.Role).Select(x => new SelectItem(x.Role.Id.ToString(), x.Role!.Name)).ToList();
+
+                var roleIds = dataPolicyRolesRemove.Select(r => r.Id).ToList();
+
+                var roles = await DbContext.Roles
+         .Where(x => !roleIds.Contains(x.Id.ToString()))
+         .Select(r => new SelectItem(r.Id.ToString(), r.Name))
+         .ToListAsync();
+
+                data.RolesList = roles;
+            }
+            else
+            {
+                data.RolesList = DbContext.Roles
+                                .ToList()
+                                .Select(r => new SelectItem(r.Id.ToString(), r.Name)).ToList();
+            }
             return data;
         }
 
@@ -187,6 +194,18 @@ namespace Authen.Repositories
         public virtual async Task<int> DeleteEntity(ClientClaimPolicy clientEntity)
         {
             DbContext.ClientClaimPolicies.Remove(clientEntity);
+
+            return await AutoSaveChangesAsync();
+        }
+
+        public virtual async Task<int> DeleteEntityRole(int roleId)
+        {
+
+            var clientEntity = await DbContext.ClientClaimPolicyRoles
+                .Where(x => x.Id == roleId)
+                .FirstOrDefaultAsync();
+
+            DbContext.ClientClaimPolicyRoles.Remove(clientEntity!);
 
             return await AutoSaveChangesAsync();
         }

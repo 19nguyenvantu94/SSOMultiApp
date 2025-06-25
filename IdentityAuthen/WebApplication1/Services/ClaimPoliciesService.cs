@@ -116,5 +116,12 @@ namespace AuthenApi.Services
             return await ClientRepository.DeleteEntity(clientEntity);
 
         }
+
+        public async Task<int> ClientPolicyRoleDelete(int id)
+        {
+           
+            return await ClientRepository.DeleteEntityRole(id);
+
+        }
     }
 }

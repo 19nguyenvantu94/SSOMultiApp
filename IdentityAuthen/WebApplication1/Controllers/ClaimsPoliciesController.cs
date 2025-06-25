@@ -68,7 +68,7 @@ namespace Authen.Controllers
 
             SuccessNotification(string.Format(_localizer["SuccessAddIdentityResource"], identityResource.ClientId), _localizer["SuccessTitle"]);
 
-            return RedirectToAction(nameof(ClientPoliciesById), new { Id = identityResource.Id });
+            return RedirectToAction(nameof(ClientPoliciesById), new { Id = identityResourceId });
         }
 
         [HttpGet]
@@ -105,5 +105,17 @@ namespace Authen.Controllers
             return RedirectToAction(nameof(ClientPolicies));
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> ClientPolicyRoleDelete(int id, int roleId)
+        {
+            if (id == 0) return NotFound();
+
+            await _claimPoliciesService.ClientPolicyRoleDelete(roleId);
+
+            SuccessNotification(_localizer["SuccessClientPolicyDelete"], _localizer["SuccessTitle"]);
+
+            return RedirectToAction(nameof(ClientPoliciesById), new { Id = id });
+        }
     }
 }

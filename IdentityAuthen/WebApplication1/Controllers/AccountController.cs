@@ -14,6 +14,7 @@ using Authen.ViewModels;
 using Configuration;
 using Duende.IdentityModel;
 using Duende.IdentityServer;
+using Duende.IdentityServer.EntityFramework.Entities;
 using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
@@ -28,12 +29,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Polly;
 using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using static Authen.Users.Models.Permissions;
 
 
 namespace Authen.Controllers
@@ -136,70 +139,50 @@ namespace Authen.Controllers
                 {
                     var result = await _signInManager.PasswordSignInAsync(user!.UserName!, model.Password, model.RememberLogin, lockoutOnFailure: true);
 
-                    var clientId = context?.Client.ClientId;
 
-                    // 🔍 Lấy role của user
-                    var userRoles = await _userManager.GetRolesAsync(user);
-
-                    // 🔍 Lấy danh sách role được phép login với client
-                    var allowedRoleIds = await _dbContext.ClientClaimPolicies
-                        .Where(x => x.Client.ClientId == clientId)
-                        .SelectMany(p => p.PolicyRoles.Select(r => r.Role.Name)) // hoặc RoleId tùy bạn
-                        .ToListAsync();
-
-                    var isAllowed = userRoles.Any(role => allowedRoleIds.Contains(role));
-
-                    if (!isAllowed)
+                    if (result.Succeeded && await CheckForSuccessLogin(context!, user))
                     {
-                        // 🚫 Giả vờ như tài khoản/password sai
-                        await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials login", clientId: context?.Client.ClientId));
-                        ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
+                        await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName));
+
+                        if (context != null)
+                        {
+                            if (context.IsNativeClient())
+                            {
+                                // The client is native, so this change in how to
+                                // return the response is for better UX for the end user.
+                                return this.LoadingPage("Redirect", model.ReturnUrl);
+                            }
+
+                            // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                            return Redirect(model.ReturnUrl ?? string.Empty);
+                        }
+
+                        // request for a local page
+                        if (Url.IsLocalUrl(model.ReturnUrl))
+                        {
+                            return Redirect(model.ReturnUrl);
+                        }
+
+                        if (string.IsNullOrEmpty(model.ReturnUrl))
+                        {
+                            return Redirect("~/");
+                        }
+
+                        // user might have clicked on a malicious link - should be logged
+                        throw new Exception("invalid return URL");
                     }
-                    else
+
+                    if (result.RequiresTwoFactor)
                     {
-                        if (result.Succeeded)
-                        {
-                            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName));
+                        return RedirectToAction(nameof(LoginWith2fa), new { model.ReturnUrl, RememberMe = model.RememberLogin });
+                    }
 
-                            if (context != null)
-                            {
-                                if (context.IsNativeClient())
-                                {
-                                    // The client is native, so this change in how to
-                                    // return the response is for better UX for the end user.
-                                    return this.LoadingPage("Redirect", model.ReturnUrl);
-                                }
-
-                                // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                                return Redirect(model.ReturnUrl ?? string.Empty);
-                            }
-
-                            // request for a local page
-                            if (Url.IsLocalUrl(model.ReturnUrl))
-                            {
-                                return Redirect(model.ReturnUrl);
-                            }
-
-                            if (string.IsNullOrEmpty(model.ReturnUrl))
-                            {
-                                return Redirect("~/");
-                            }
-
-                            // user might have clicked on a malicious link - should be logged
-                            throw new Exception("invalid return URL");
-                        }
-
-                        if (result.RequiresTwoFactor)
-                        {
-                            return RedirectToAction(nameof(LoginWith2fa), new { model.ReturnUrl, RememberMe = model.RememberLogin });
-                        }
-
-                        if (result.IsLockedOut)
-                        {
-                            return View("Lockout");
-                        }
+                    if (result.IsLockedOut)
+                    {
+                        return View("Lockout");
                     }
                 }
+
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials login", clientId: context?.Client.ClientId));
                 ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
             }
@@ -838,6 +821,46 @@ namespace Authen.Controllers
             }
 
             return vm;
+        }
+
+        private async Task<bool> CheckForSuccessLogin(AuthorizationRequest context, ApplicationUser user)
+        {
+            var clientId = context?.Client.ClientId;
+
+            // 🔍 Lấy role của user
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            // 🔍 Lấy danh sách role được phép login với client
+
+            if (!string.IsNullOrEmpty(clientId))
+            {
+                var allowedRoleIds = await _dbContext.ClientClaimPolicies
+               .Where(x => x.Client.ClientId == clientId)
+               .SelectMany(p => p.PolicyRoles.Select(r => r.Role.Name)) // hoặc RoleId tùy bạn
+               .ToListAsync();
+
+                var isAllowed = userRoles.Any(role => allowedRoleIds.Contains(role));
+
+                if (!isAllowed)
+                {
+                    // 🚫 Giả vờ như tài khoản/password sai
+                    return false;
+                }
+            }
+            else
+            {
+                var isAllowed = userRoles.Any(role => userRoles.Contains(DefaultRoleNames.Administrator));
+
+                if (!isAllowed)
+                {
+                    // 🚫 Giả vờ như tài khoản/password sai
+                    return false;
+                }
+
+            }
+
+            return true;
+
         }
     }
 }

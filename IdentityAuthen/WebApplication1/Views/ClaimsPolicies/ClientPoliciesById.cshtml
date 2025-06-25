@@ -45,24 +45,25 @@
 
                     <label asp-for="Client.ClientId" class="col-sm-3 col-form-label">
                     </label>
-                    <div class="col-sm-9">
+                    <div class="col-sm-3">
                         <select asp-for="ClientId" asp-items="@(new SelectList(Model.ClientsList, "Id", "Text"))" class="form-control single-select"></select>
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label asp-for="RoleId" class="col-sm-3 col-form-label">
-                        <div class="col-sm-9">
-                    </label>
-                    <select asp-for="RoleId" asp-items="@(new SelectList(Model.RolesList, "Id", "Text"))" class="form-control single-select"></select>
-                </div>
+                    <label asp-for="RoleId" class="col-sm-3 col-form-label">                   
 
+                    </label>
+
+                    <div class="col-sm-3">
+                    <select asp-for="RoleId" asp-items="@(new SelectList(Model.RolesList, "Id", "Text"))" class="form-control single-select"></select>
+                    </div>
+                </div>
             }
             else
             {
-                <div class="form-group row">
+               @*  <div class="form-group row">
                     <label asp-for="Client.ClientId" class="col-sm-3 col-form-label">
-                        @*                             @await Html.PartialAsync("User/Section/Label", "UserUserName")
- *@                        </label>
+                          </label>
                     <div class="col-sm-9">
                         <input asp-for="Client.ClientId" readonly class="form-control" />
                     </div>
@@ -71,22 +72,68 @@
                     <label asp-for="RoleId" class="col-sm-3 col-form-label">
                     </label>
                     <select asp-for="RoleId" asp-items="@(new SelectList(Model.RolesList, "Id", "Text"))" class="form-control single-select"></select>
-                </div>
+                </div> *@
 
                 <div class="form-group row">
-                    <label asp-for="RoleId" class="col-sm-3 col-form-label">
-                    </label>
-                    <div class="col-sm-9">
-                        <select asp-for="RoleId" asp-items="@(new SelectList(Model.Roles, "Id", "Text"))" class="form-control single-select"></select>
+                  <label asp-for="Client.ClientId" class="col-sm-3 col-form-label">
+                          </label>
+                    <div class="col-sm-3">
+                        <input asp-for="Client.ClientId" readonly class="form-control" />
                     </div>
                 </div>
-            }
+                <div class="form-group row">
+                    <label asp-for="RoleId" class="col-sm-3 col-form-label">                   
 
-            <button type="submit" asp-action="ClientPolicy" id="identity-resource-save-button" class="btn btn-primary">@Localizer["ButtonSave"]</button>
+                    </label>
+
+                    <div class="col-sm-3">
+                    <select asp-for="RoleId" asp-items="@(new SelectList(Model.RolesList, "Id", "Text"))" class="form-control single-select"></select>
+                    </div>
+                </div>
+
+            }
+              <div class="form-group row">
+                 <div class="col-sm-9 text-center">
+                     <button type="submit" asp-action="ClientPolicy" id="identity-resource-save-button" class="btn btn-primary">@Localizer["ButtonSave"]</button>
+                 </div>
+              </div>
         </div>
     </div>
 
 </form>
+
+@if(Model!.Roles != null && Model!.Roles.Any())
+{ <div class="row">
+    <div class="col-md-12">
+        <div class="card mt-3">
+            <h5 class="card-header">@Localizer["TitleRoles"]</h5>
+            <div class="card-body">
+
+                <div class="row table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>@Localizer["RoleName"]</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var role in Model!.Roles!)
+                            {
+                                <tr>
+                                    <td>@role.Text</td>
+                                    <td><a asp-action="ClientPolicyRoleDelete" asp-route-roleId="@role.Id" asp-route-id="@Model.Id" class="btn btn-danger">@Localizer["ActionRemoveRole"]</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+   
 
 @section scripts
 {

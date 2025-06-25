@@ -18,5 +18,7 @@ namespace AuthenApi.Services.Interfaces
         Task<ClientsIdDto> GetClaimsPolicies(int identityResourceId);
         Task<int> UpdateClaimsPolicies(ClientsIdDto identityResource);
         Task<int> ClientPolicyDelete(int id);
+
+        Task<int> ClientPolicyRoleDelete(int roleId);
     }
 }

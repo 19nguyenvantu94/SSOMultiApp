@@ -4,6 +4,11 @@ namespace Authen.Models
 {
     public class ClientClaimPolicyRole
     {
+
+        [Key]
+        public int Id { get; set; }
+
+
         public int ClientClaimPolicyId { get; set; }
         public Guid RoleId { get; set; }
 
