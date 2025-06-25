@@ -4,7 +4,7 @@
 using Authen.Helpers;
 using Authen.Models;
 using AuthenApi.Common;
-using Duende.IdentityServer.Models;
+using Duende.IdentityServer.EntityFramework.Entities;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 
@@ -14,16 +14,25 @@ namespace AuthenApi.Dtos.Grant
     {
         public ClientsPoliciesDto()
         {
-            ClientsPolicies = new List<ClientClaimPolicy>();
+            ClientsPolicies = new List<ClientPageDto>();
         }
 
         public int TotalCount { get; set; }
 
         public int PageSize { get; set; }
-        public List<ClientClaimPolicy> ClientsPolicies { get; set; }
+        public List<ClientPageDto> ClientsPolicies { get; set; }
     }
 
- 
+    public class ClientPageDto
+    {
+        public int Id { get; set; }
+
+        public int ClientId { get; set; }   
+
+        public string ClientName { get; set; }
+
+        public string RolesNames { get; set; }
+    }
 
 
     public class ClientsIdDto

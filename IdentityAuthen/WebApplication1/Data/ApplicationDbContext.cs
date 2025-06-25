@@ -174,6 +174,12 @@ namespace Authen.Data
                 .WithMany()
                 .HasForeignKey(x => x.RoleId);
 
+
+            builder.Entity<ClientClaimPolicy>()
+                .Ignore(x => x.Client)
+                .Ignore(x => x.PolicyRoles);
+
+
             SetGlobalQueryFilters(builder);
 
         }

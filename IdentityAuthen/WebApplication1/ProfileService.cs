@@ -146,10 +146,49 @@ namespace Authen
             }
 
             var clientId = context.Client.ClientId;
+
+            // Lấy tất cả Role được phép đăng nhập của client này
             var allowedRoleIds = await _applicationDbContext.ClientClaimPolicies
-        .Where(x => x.Client.ClientId == clientId)
-        .SelectMany(p => p.PolicyRoles.Select(pr => pr.RoleId))
-        .ToListAsync();
+                .Where(x => x.Client.ClientId == clientId )
+                .SelectMany(p => p.PolicyRoles.Select(pr => pr.RoleId))
+                .ToListAsync();
+
+            // Lấy role gán cho user
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var roleEntities = await _roleManager.Roles
+                .Where(r => userRoles.Contains(r.Name))
+                .Select(r => r.Id)
+                .ToListAsync();
+
+            bool hasAllowedRole = roleEntities.Any(rid => allowedRoleIds.Contains(rid));
+            if (!hasAllowedRole)
+            {
+                // Không có role phù hợp => không active
+                context.IsActive = false;
+                return;
+            }
+
+
+            // Kiểm tra security_stamp
+            if (_userManager.SupportsUserSecurityStamp)
+            {
+                var securityStamp = subject.Claims.FirstOrDefault(c => c.Type == "security_stamp")?.Value;
+                if (securityStamp != null)
+                {
+                    var dbSecurityStamp = await _userManager.GetSecurityStampAsync(user);
+                    if (dbSecurityStamp != securityStamp)
+                    {
+                        context.IsActive = false;
+                        return;
+                    }
+                }
+            }
+
+            // Cuối cùng gán context.IsActive
+            context.IsActive = !user.LockoutEnabled || !user.LockoutEnd.HasValue || user.LockoutEnd <= DateTime.UtcNow;
+
+            // Cuối cùng gán context.IsActive
+            context.IsActive = !user.LockoutEnabled || !user.LockoutEnd.HasValue || user.LockoutEnd <= DateTime.UtcNow;
 
         }
 

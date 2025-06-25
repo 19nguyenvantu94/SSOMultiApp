@@ -19,10 +19,8 @@ namespace Authen.Models
 
         public int IdClient { get; set; }
 
-        [NotMapped]
         public Client Client { get; set; }
 
-        [NotMapped]
         public virtual ICollection<ClientClaimPolicyRole> PolicyRoles { get; set; }
     }
 }
