@@ -47,7 +47,7 @@ namespace AuthenApi.Services
             return await ClientRepository.GetClientPoliciesAsync(search, page, pageSize);
         }
 
-        public ClientClaimPolicy BuildIdentityResourceViewModel(ClientClaimPolicy identityResource)
+        public ClientsIdDto BuildIdentityResourceViewModel(ClientsIdDto identityResource)
         {
 
             //ComboBoxHelpers.PopulateValuesToList(identityResource.UserClaimsItems, identityResource.UserClaims);
@@ -56,7 +56,7 @@ namespace AuthenApi.Services
 
         }
 
-        public async Task<int> AddClaimsPolicies(ClientClaimPolicy identityResource)
+        public async Task<int> AddClaimsPolicies(ClientsIdDto identityResource)
         {
             var canInsert = await CanInsertClaimsPolicies(identityResource);
             if (!canInsert)
@@ -71,7 +71,7 @@ namespace AuthenApi.Services
             return saved;
         }
 
-        public virtual async Task<bool> CanInsertClaimsPolicies(ClientClaimPolicy identityResourcePropertiesDto)
+        public virtual async Task<bool> CanInsertClaimsPolicies(ClientsIdDto identityResourcePropertiesDto)
         {
 
             return await ClientRepository.CanInsertClaimsPoliciesAsync(identityResourcePropertiesDto);
@@ -79,7 +79,7 @@ namespace AuthenApi.Services
 
 
 
-        public async Task<ClientClaimPolicy> GetClaimsPolicies(int identityResourceId)
+        public async Task<ClientsIdDto> GetClaimsPolicies(int identityResourceId)
         {
             return await ClientRepository.ClaimsPoliciesById(identityResourceId);
         }
@@ -89,7 +89,7 @@ namespace AuthenApi.Services
         //    throw new NotImplementedException();
         //}
 
-        public async Task<int> UpdateClaimsPolicies(ClientClaimPolicy identityResource)
+        public async Task<int> UpdateClaimsPolicies(ClientsIdDto identityResource)
         {
             var canInsert = await CanInsertClaimsPolicies(identityResource);
             if (!canInsert)
@@ -106,7 +106,7 @@ namespace AuthenApi.Services
 
         public async Task<int> ClientPolicyDelete(int id)
         {
-            var clientEntity = await ClientRepository.ClaimsPoliciesById(id);
+            var clientEntity = await ClientRepository.CheckForDelete(id);
 
             if (clientEntity == null)
             {
@@ -114,6 +114,13 @@ namespace AuthenApi.Services
             }
 
             return await ClientRepository.DeleteEntity(clientEntity);
+
+        }
+
+        public async Task<int> ClientPolicyRoleDelete(int id)
+        {
+           
+            return await ClientRepository.DeleteEntityRole(id);
 
         }
     }

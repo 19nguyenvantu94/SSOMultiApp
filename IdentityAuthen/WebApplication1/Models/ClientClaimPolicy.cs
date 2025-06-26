@@ -1,6 +1,9 @@
 ﻿using Authen.Users;
+using Authen.Users.Models;
+using Duende.IdentityServer.Models;
 using Finbuckle.MultiTenant;
 using Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Authen.Models
 {
@@ -13,21 +16,11 @@ namespace Authen.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        public string? ClientId { get; set; }
 
-        [Required]
+        public int IdClient { get; set; }
 
-        public string? RequiredClaim { get; set; }
+        public Client Client { get; set; }
 
-        [Required]
-
-        public bool ClaimValue { get; set; }
-
-        [Required]
-
-        public bool IsEnabled { get; set; } = false;
-
-
+        public virtual ICollection<ClientClaimPolicyRole> PolicyRoles { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using Authen.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Authen.Data.Migrations.ApplicationDb
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250623171441_UpdateClaimPolicy")]
+    partial class UpdateClaimPolicy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,9 +56,6 @@ namespace Authen.Data.Migrations.ApplicationDb
 
                     b.Property<Guid>("RoleId")
                         .HasColumnType("char(36)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.HasKey("ClientClaimPolicyId", "RoleId");
 
@@ -1521,7 +1521,7 @@ namespace Authen.Data.Migrations.ApplicationDb
             modelBuilder.Entity("Authen.Models.ClientClaimPolicyRole", b =>
                 {
                     b.HasOne("Authen.Models.ClientClaimPolicy", "ClientClaimPolicy")
-                        .WithMany()
+                        .WithMany("PolicyRoles")
                         .HasForeignKey("ClientClaimPolicyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1811,6 +1811,11 @@ namespace Authen.Data.Migrations.ApplicationDb
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Authen.Models.ClientClaimPolicy", b =>
+                {
+                    b.Navigation("PolicyRoles");
                 });
 
             modelBuilder.Entity("Authen.Users.Models.ApplicationRole", b =>
