@@ -19,7 +19,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-controller="ClaimsPolicies" asp-action="ClientPolicies">@Localizer["NavigationClaimsPolicies"]</a></li>
-                @* <li class="breadcrumb-item active" aria-current="page">@Model.ClientId</li> *@
+                <li class="breadcrumb-item active" aria-current="page">@Model.Client!.ClientName</li>
             </ol>
         </nav>
     </div>
@@ -43,7 +43,7 @@
             {
                 <div class="form-group row">
 
-                    <label asp-for="Client.ClientId" class="col-sm-3 col-form-label">
+                    <label asp-for="Client.ClientName" class="col-sm-3 col-form-label">
                     </label>
                     <div class="col-sm-3">
                         <select asp-for="ClientId" asp-items="@(new SelectList(Model.ClientsList, "Id", "Text"))" class="form-control single-select"></select>
@@ -113,6 +113,7 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                 <th>@Localizer["Id"]</th>
                                 <th>@Localizer["RoleName"]</th>
                                 <th></th>
                             </tr>
@@ -121,8 +122,9 @@
                             @foreach (var role in Model!.Roles!)
                             {
                                 <tr>
+                                     <td>@role.Id</td>
                                     <td>@role.Text</td>
-                                    <td><a asp-action="ClientPolicyRoleDelete" asp-route-roleId="@role.Id" asp-route-id="@Model.Id" class="btn btn-danger">@Localizer["ActionRemoveRole"]</a></td>
+                                    <td><a asp-action="GetClientPolicyRoleDelete" asp-route-id="@role.Id"  class="btn btn-danger">@Localizer["ActionRemoveRole"]</a></td>
                                 </tr>
                             }
                         </tbody>

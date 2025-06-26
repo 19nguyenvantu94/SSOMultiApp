@@ -31,13 +31,13 @@ namespace Authen.Controllers
             : base(logger)
         {
             _claimPoliciesService = claimsPoliciesService;
-             _localizer = localizer;
+            _localizer = localizer;
         }
 
         [HttpGet]
         public async Task<IActionResult> ClientPolicies(string search, int? page)
         {
-          
+
             var claims = await _claimPoliciesService.GetClientPoliciesAsync(search, page ?? 1);
 
             return View(claims);
@@ -87,35 +87,66 @@ namespace Authen.Controllers
             //    return View(createValue);
             //}
 
-         
+
             var identityResource = await _claimPoliciesService.GetClaimsPolicies(identityResourceId);
 
             return View(identityResource);
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetClientPolicyDelete(int id)
+        {
+            if (id == 0) return NotFound();
+
+            var identityResource = await _claimPoliciesService.GetClaimsPolicies(id);
+
+            ClientClaimsPolicyDto clientClaimsPolicyDto = new ClientClaimsPolicyDto { Id = identityResource.Id, ClientId = identityResource.ClientId, ClientName = identityResource.Client!.ClientName };
+
+            return View(clientClaimsPolicyDto);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> ClientPolicyDelete(int id)
         {
             if (id == 0) return NotFound();
 
-            await _claimPoliciesService.ClientPolicyDelete(id);
-
-            SuccessNotification(_localizer["SuccessClientPolicyDelete"], _localizer["SuccessTitle"]);
+            var identityResource = await _claimPoliciesService.ClientPolicyDelete(id);
 
             return RedirectToAction(nameof(ClientPolicies));
         }
 
 
         [HttpGet]
-        public async Task<IActionResult> ClientPolicyRoleDelete(int id, int roleId)
+        public async Task<IActionResult> GetClientPolicyRoleDelete(int id)
         {
             if (id == 0) return NotFound();
 
-            await _claimPoliciesService.ClientPolicyRoleDelete(roleId);
+            var identityResource = await _claimPoliciesService.GetClientsRolesDeleteDto(id);
 
-            SuccessNotification(_localizer["SuccessClientPolicyDelete"], _localizer["SuccessTitle"]);
 
-            return RedirectToAction(nameof(ClientPoliciesById), new { Id = id });
+            return View(identityResource);
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ClientPolicyRoleDelete(ClientsRolesDeleteDto clientsRolesDeleteDto)
+        {
+            if (clientsRolesDeleteDto.Id == 0) return NotFound();
+
+            var identityResource = await _claimPoliciesService.ClientPolicyRoleDelete(clientsRolesDeleteDto.Id);
+
+
+            return RedirectToAction(nameof(ClientPoliciesById), new { Id = clientsRolesDeleteDto.ClaimPolicyId });
+        }
+
+        //[HttpPost]
+        //public async Task<IActionResult> GetClienDelete(int id)
+        //{
+
+        //    var identityResource = await _claimPoliciesService.GetClaimsPolicies(id);
+
+        //    return RedirectToAction(nameof(GetClienDelete), new { identityResource });
+        //}
+
     }
 }

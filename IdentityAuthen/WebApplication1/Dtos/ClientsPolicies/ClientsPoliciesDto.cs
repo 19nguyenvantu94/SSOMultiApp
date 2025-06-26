@@ -56,4 +56,25 @@ namespace AuthenApi.Dtos.Grant
 
     }
 
+    public class ClientsRolesDeleteDto
+    {
+
+        public int Id { get; set; }
+
+        public int ClaimPolicyId { get; set; }
+
+        public string ClientName { get; set; }
+
+        public string RoleName { get; set; }
+
+    }
+
+    public class ClientClaimsPolicyDto
+    {
+        public int Id { get; set; }
+        public int ClientId { get; set; }
+
+        public string ClientName { get; set; }
+    }
+
 }

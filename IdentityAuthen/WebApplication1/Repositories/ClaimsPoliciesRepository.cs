@@ -174,6 +174,13 @@ namespace Authen.Repositories
             //Update with new data
             //DbContext.ClientClaimPolicies.Update(identityResource);
 
+            await DbContext.ClientClaimPolicyRoles.AddAsync(new ClientClaimPolicyRole
+            {
+                ClientClaimPolicyId = identityResource.Id,
+                RoleId = identityResource.RoleId,
+
+            });
+
             return await AutoSaveChangesAsync();
         }
 
@@ -208,6 +215,26 @@ namespace Authen.Repositories
             DbContext.ClientClaimPolicyRoles.Remove(clientEntity!);
 
             return await AutoSaveChangesAsync();
+        }
+
+        public async Task<ClientsRolesDeleteDto> GetClientsRolesDeleteDto(int identityResourceId)
+        {
+            var clientEntity = await DbContext.ClientClaimPolicyRoles
+               .Where(x => x.Id == identityResourceId)
+               .Include(x=>x.Role)
+               .Include(x=>x.ClientClaimPolicy)
+               .FirstOrDefaultAsync();
+
+            return new ClientsRolesDeleteDto
+            {
+                Id = clientEntity!.Id,
+                ClaimPolicyId = clientEntity.ClientClaimPolicyId,
+                RoleName = clientEntity!.Role!.Name,
+                ClientName = DbContext.Clients
+                    .Where(c => c.Id == clientEntity.ClientClaimPolicy!.IdClient)
+                    .Select(c => c.ClientId)
+                    .FirstOrDefault() ?? string.Empty
+            };
         }
     }
 }

@@ -12,7 +12,7 @@ namespace AuthenApi.Services.Interfaces
     public interface IClaimsPoliciesService
     {
         ClientsIdDto BuildIdentityResourceViewModel(ClientsIdDto identityResource);
-        Task< ClientsPoliciesDto> GetClientPoliciesAsync(string search, int page = 1, int pageSize = 10);
+        Task<ClientsPoliciesDto> GetClientPoliciesAsync(string search, int page = 1, int pageSize = 10);
 
         Task<int> AddClaimsPolicies(ClientsIdDto identityResource);
         Task<ClientsIdDto> GetClaimsPolicies(int identityResourceId);
@@ -20,5 +20,6 @@ namespace AuthenApi.Services.Interfaces
         Task<int> ClientPolicyDelete(int id);
 
         Task<int> ClientPolicyRoleDelete(int roleId);
+        Task<ClientsRolesDeleteDto> GetClientsRolesDeleteDto(int identityResourceId);
     }
 }

@@ -123,5 +123,12 @@ namespace AuthenApi.Services
             return await ClientRepository.DeleteEntityRole(id);
 
         }
+
+        public async Task<ClientsRolesDeleteDto> GetClientsRolesDeleteDto(int identityResourceId)
+        {
+            return await ClientRepository.GetClientsRolesDeleteDto(identityResourceId);
+        }
+
+     
     }
 }
