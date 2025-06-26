@@ -9,7 +9,7 @@ metadata:
     app: blazorwebidentity
 spec:
   minReadySeconds: 60
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: blazorwebidentity
