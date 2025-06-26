@@ -40,7 +40,7 @@ namespace Authen.Users.Models
         public virtual async Task SeedAsync()
         {
             //Apply EF Core migration
-            await MigrateAsync();
+            //await MigrateAsync();
 
             await EnsureAdminIdentitiesAsync();
 
