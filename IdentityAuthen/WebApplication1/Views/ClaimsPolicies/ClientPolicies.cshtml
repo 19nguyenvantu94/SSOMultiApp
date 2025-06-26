@@ -45,7 +45,7 @@
                         <tr>
                             <td>
                                 <a class="btn btn-primary" asp-action="ClientPoliciesById" asp-route-id="@persistedGrant.Id">@Localizer["TableButtonEdit"]</a>
-                                <a class="btn btn-danger" asp-action="ClientPolicyDelete" asp-route-id="@UrlHelpers.QueryStringSafeHash(persistedGrant.Id.ToString())">
+                                <a class="btn btn-danger" asp-action="GetClientPolicyDelete" asp-route-id="@UrlHelpers.QueryStringSafeHash(persistedGrant.Id.ToString())">
                                     <span class="oi oi-x"></span>
                                 </a>
                             </td>
