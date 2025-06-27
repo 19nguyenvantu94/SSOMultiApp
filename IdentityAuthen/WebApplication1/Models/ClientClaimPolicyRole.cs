@@ -1,4 +1,5 @@
 ﻿using Authen.Users.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Authen.Models
 {
@@ -6,6 +7,7 @@ namespace Authen.Models
     {
 
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
 

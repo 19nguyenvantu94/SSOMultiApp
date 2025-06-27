@@ -19,7 +19,11 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a asp-controller="ClaimsPolicies" asp-action="ClientPolicies">@Localizer["NavigationClaimsPolicies"]</a></li>
-                <li class="breadcrumb-item active" aria-current="page">@Model.Client!.ClientName</li>
+                @if (Model.Id != 0)
+                {
+                   <li class="breadcrumb-item active" aria-current="page">@Model.Client!.ClientName</li>
+                }
+             
             </ol>
         </nav>
     </div>

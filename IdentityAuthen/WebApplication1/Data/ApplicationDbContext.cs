@@ -162,9 +162,6 @@ namespace Authen.Data
             builder.Entity<DeviceFlowCodes>().ToTable("DeviceFlowCodes").HasKey(x => x.DeviceCode);
 
             builder.Entity<ClientClaimPolicyRole>()
-      .HasKey(x => new { x.ClientClaimPolicyId, x.RoleId });
-
-            builder.Entity<ClientClaimPolicyRole>()
                 .HasOne(x => x.ClientClaimPolicy)
                 .WithMany(x => x.PolicyRoles)
                 .HasForeignKey(x => x.ClientClaimPolicyId);
@@ -178,6 +175,14 @@ namespace Authen.Data
             builder.Entity<ClientClaimPolicy>()
                 .Ignore(x => x.Client)
                 .Ignore(x => x.PolicyRoles);
+
+            builder.Entity<ClientClaimPolicyRole>()
+            .HasKey(x => x.Id); // Nếu bạn muốn Id là khóa chính
+
+            // Nếu bạn muốn thêm ràng buộc phụ:
+            builder.Entity<ClientClaimPolicyRole>()
+                .HasIndex(x => new { x.ClientClaimPolicyId, x.RoleId })
+                .IsUnique();
 
 
             SetGlobalQueryFilters(builder);
