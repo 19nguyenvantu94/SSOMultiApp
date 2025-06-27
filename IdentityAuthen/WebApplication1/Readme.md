@@ -1,6 +1,6 @@
 -- Migration Command
 
-add-migration AddIdClaim -OutputDir  Data/Migrations/ApplicationDb  -StartupProject Authen -Context ApplicationDbContext
+add-migration ChangeAutoIncrement -OutputDir  Data/Migrations/ApplicationDb  -StartupProject Authen -Context ApplicationDbContext
 
 add-migration GenerateApplicationTenantDB1 -OutputDir  Data/Migrations/TenantStoreDb  -StartupProject Authen -Context TenantStoreDbContext
 

@@ -109,6 +109,8 @@ namespace Authen.Repositories
 
             await DbContext.ClientClaimPolicyRoles.AddAsync(clientClaimPolicyRole);
 
+            await DbContext.SaveChangesAsync(); // Save to generate Id
+
             return dataAdd.Entity.Id;
         }
 
