@@ -145,28 +145,28 @@ namespace Authen
                 return;
             }
 
-            var clientId = context.Client.ClientId;
+            //var clientId = context.Client.ClientId;
 
-            // Lấy tất cả Role được phép đăng nhập của client này
-            var allowedRoleIds = await _applicationDbContext.ClientClaimPolicies
-                .Where(x => x.Client.ClientId == clientId )
-                .SelectMany(p => p.PolicyRoles.Select(pr => pr.RoleId))
-                .ToListAsync();
+            //// Lấy tất cả Role được phép đăng nhập của client này
+            //var allowedRoleIds = await _applicationDbContext.ClientClaimPolicies
+            //    .Where(x => x.Client.ClientId == clientId )
+            //    .SelectMany(p => p.PolicyRoles.Select(pr => pr.RoleId))
+            //    .ToListAsync();
 
-            // Lấy role gán cho user
-            var userRoles = await _userManager.GetRolesAsync(user);
-            var roleEntities = await _roleManager.Roles
-                .Where(r => userRoles.Contains(r.Name))
-                .Select(r => r.Id)
-                .ToListAsync();
+            //// Lấy role gán cho user
+            //var userRoles = await _userManager.GetRolesAsync(user);
+            //var roleEntities = await _roleManager.Roles
+            //    .Where(r => userRoles.Contains(r.Name))
+            //    .Select(r => r.Id)
+            //    .ToListAsync();
 
-            bool hasAllowedRole = roleEntities.Any(rid => allowedRoleIds.Contains(rid));
-            if (!hasAllowedRole)
-            {
-                // Không có role phù hợp => không active
-                context.IsActive = false;
-                return;
-            }
+            //bool hasAllowedRole = roleEntities.Any(rid => allowedRoleIds.Contains(rid));
+            //if (!hasAllowedRole)
+            //{
+            //    // Không có role phù hợp => không active
+            //    context.IsActive = false;
+            //    return;
+            //}
 
 
             // Kiểm tra security_stamp

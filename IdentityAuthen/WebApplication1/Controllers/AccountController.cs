@@ -73,6 +73,7 @@ namespace Authen.Controllers
             _schemeProvider = schemeProvider;
             _handlerProvider = handlerProvider;
             _events = events;
+            _dbContext = dbContext;
         }
 
         /// <summary>
@@ -834,12 +835,17 @@ namespace Authen.Controllers
 
             if (!string.IsNullOrEmpty(clientId))
             {
-                var allowedRoleIds = await _dbContext.ClientClaimPolicies
-               .Where(x => x.Client.ClientId == clientId)
-               .SelectMany(p => p.PolicyRoles.Select(r => r.Role.Name)) // hoặc RoleId tùy bạn
-               .ToListAsync();
 
-                var isAllowed = userRoles.Any(role => allowedRoleIds.Contains(role));
+                var clientById = await _dbContext.Clients.Where(x => x.ClientId == clientId).Select(x => x.Id).FirstOrDefaultAsync();
+
+                var allowedRoleNames = await _dbContext.ClientClaimPolicyRoles
+         .Where(r => r.ClientClaimPolicy.IdClient == clientById)
+         .Join(_dbContext.Roles,
+               policyRole => policyRole.RoleId,
+               role => role.Id,
+               (policyRole, role) => role.Name)
+         .ToListAsync();
+                var isAllowed = userRoles.Any(role => allowedRoleNames.Contains(role));
 
                 if (!isAllowed)
                 {
