@@ -187,9 +187,6 @@ namespace Authen
             // Cuối cùng gán context.IsActive
             context.IsActive = !user.LockoutEnabled || !user.LockoutEnd.HasValue || user.LockoutEnd <= DateTime.UtcNow;
 
-            // Cuối cùng gán context.IsActive
-            context.IsActive = !user.LockoutEnabled || !user.LockoutEnd.HasValue || user.LockoutEnd <= DateTime.UtcNow;
-
         }
 
         private async Task<List<Claim>> GetClaimsFromUser(ApplicationUser user, List<Claim> claims)

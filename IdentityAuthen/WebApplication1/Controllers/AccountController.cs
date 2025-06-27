@@ -138,50 +138,54 @@ namespace Authen.Controllers
 
                 if (user != default(ApplicationUser))
                 {
-                    var result = await _signInManager.PasswordSignInAsync(user!.UserName!, model.Password, model.RememberLogin, lockoutOnFailure: true);
 
-
-                    if (result.Succeeded && await CheckForSuccessLogin(context!, user))
+                    if(await CheckForSuccessLogin(context!, user))
                     {
-                        await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName));
+                        var result = await _signInManager.PasswordSignInAsync(user!.UserName!, model.Password, model.RememberLogin, lockoutOnFailure: true);
 
-                        if (context != null)
+                        if (result.Succeeded)
                         {
-                            if (context.IsNativeClient())
+                            await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName));
+
+                            if (context != null)
                             {
-                                // The client is native, so this change in how to
-                                // return the response is for better UX for the end user.
-                                return this.LoadingPage("Redirect", model.ReturnUrl);
+                                if (context.IsNativeClient())
+                                {
+                                    // The client is native, so this change in how to
+                                    // return the response is for better UX for the end user.
+                                    return this.LoadingPage("Redirect", model.ReturnUrl);
+                                }
+
+                                // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                                return Redirect(model.ReturnUrl ?? string.Empty);
                             }
 
-                            // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                            return Redirect(model.ReturnUrl ?? string.Empty);
+                            // request for a local page
+                            if (Url.IsLocalUrl(model.ReturnUrl))
+                            {
+                                return Redirect(model.ReturnUrl);
+                            }
+
+                            if (string.IsNullOrEmpty(model.ReturnUrl))
+                            {
+                                return Redirect("~/");
+                            }
+
+                            // user might have clicked on a malicious link - should be logged
+                            throw new Exception("invalid return URL");
                         }
 
-                        // request for a local page
-                        if (Url.IsLocalUrl(model.ReturnUrl))
+                        if (result.RequiresTwoFactor)
                         {
-                            return Redirect(model.ReturnUrl);
+                            return RedirectToAction(nameof(LoginWith2fa), new { model.ReturnUrl, RememberMe = model.RememberLogin });
                         }
 
-                        if (string.IsNullOrEmpty(model.ReturnUrl))
+                        if (result.IsLockedOut)
                         {
-                            return Redirect("~/");
+                            return View("Lockout");
                         }
-
-                        // user might have clicked on a malicious link - should be logged
-                        throw new Exception("invalid return URL");
                     }
-
-                    if (result.RequiresTwoFactor)
-                    {
-                        return RedirectToAction(nameof(LoginWith2fa), new { model.ReturnUrl, RememberMe = model.RememberLogin });
-                    }
-
-                    if (result.IsLockedOut)
-                    {
-                        return View("Lockout");
-                    }
+                    
                 }
 
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials login", clientId: context?.Client.ClientId));
