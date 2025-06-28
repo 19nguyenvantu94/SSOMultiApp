@@ -60,14 +60,14 @@ namespace Authen
 
             };
 
-                if (_userManager.SupportsUserEmail)
+                //if (_userManager.SupportsUserEmail)
+                //{
+                claims.AddRange(new[]
                 {
-                    claims.AddRange(new[]
-                    {
                     new Claim(JwtClaimTypes.Email, user.Email),
                     new Claim(JwtClaimTypes.EmailVerified, user.EmailConfirmed ? "true" : "false", ClaimValueTypes.Boolean)
                 });
-                }
+                //}
 
                 if (_userManager.SupportsUserPhoneNumber && !string.IsNullOrWhiteSpace(user.PhoneNumber))
                 {
@@ -78,11 +78,11 @@ namespace Authen
                 });
                 }
 
-                if (!string.IsNullOrEmpty(user.AvatarUrl))
-                {
-                    claims.Add(new Claim("avatar", user.AvatarUrl!));
+                //if (!string.IsNullOrEmpty(user.AvatarUrl))
+                //{
+                claims.Add(new Claim("avatar", user.AvatarUrl ?? ""));
 
-                }
+                //}
 
                 if (user.UserType == DefaultRoleNames.Administrator && allowsClientIds.Contains(clientId))
                 {
