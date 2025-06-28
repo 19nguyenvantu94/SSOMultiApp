@@ -38,7 +38,6 @@ namespace Authen
                 var subject = context.Subject ?? throw new ArgumentNullException(nameof(context.Subject));
 
                 var subjectId = subject.Claims.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
-                var clientId = context.Client.ClientId;
 
                 var user = await _userManager.FindByIdAsync(subjectId);
                 if (user == null)
