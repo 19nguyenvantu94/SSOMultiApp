@@ -145,29 +145,32 @@ namespace Authen
                 return;
             }
 
-            //var clientId = context.Client.ClientId;
+            var clientId = context?.Client.ClientId;
 
-            //// Lấy tất cả Role được phép đăng nhập của client này
-            //var allowedRoleIds = await _applicationDbContext.ClientClaimPolicies
-            //    .Where(x => x.Client.ClientId == clientId )
-            //    .SelectMany(p => p.PolicyRoles.Select(pr => pr.RoleId))
-            //    .ToListAsync();
+            // 🔍 Lấy role của user
+            var userRoles = await _userManager.GetRolesAsync(user);
 
-            //// Lấy role gán cho user
-            //var userRoles = await _userManager.GetRolesAsync(user);
-            //var roleEntities = await _roleManager.Roles
-            //    .Where(r => userRoles.Contains(r.Name))
-            //    .Select(r => r.Id)
-            //    .ToListAsync();
+            if (!string.IsNullOrEmpty(clientId))
+            {
 
-            //bool hasAllowedRole = roleEntities.Any(rid => allowedRoleIds.Contains(rid));
-            //if (!hasAllowedRole)
-            //{
-            //    // Không có role phù hợp => không active
-            //    context.IsActive = false;
-            //    return;
-            //}
+                var clientById = await _applicationDbContext.Clients.Where(x => x.ClientId == clientId).Select(x => x.Id).FirstOrDefaultAsync();
 
+                var allowedRoleNames = await _applicationDbContext.ClientClaimPolicyRoles
+         .Where(r => r.ClientClaimPolicy.IdClient == clientById)
+         .Join(_applicationDbContext.Roles,
+               policyRole => policyRole.RoleId,
+               role => role.Id,
+               (policyRole, role) => role.Name)
+         .ToListAsync();
+                var isAllowed = userRoles.Any(role => allowedRoleNames.Contains(role));
+
+                if (!isAllowed)
+                {
+                    // 🚫 Giả vờ như tài khoản/password sai
+                    context.IsActive = false;
+                    return;
+                }
+            }
 
             // Kiểm tra security_stamp
             if (_userManager.SupportsUserSecurityStamp)
