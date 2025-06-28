@@ -69,14 +69,14 @@ namespace Authen
                 });
                 }
 
-                if (_userManager.SupportsUserPhoneNumber && !string.IsNullOrWhiteSpace(user.PhoneNumber))
-                {
+                //if (_userManager.SupportsUserPhoneNumber && !string.IsNullOrWhiteSpace(user.PhoneNumber))
+                //{
                     claims.AddRange(new[]
                     {
                     new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber),
                     new Claim(JwtClaimTypes.PhoneNumberVerified, user.PhoneNumberConfirmed ? "true" : "false", ClaimValueTypes.Boolean)
                 });
-                }
+                //}
 
                 if (!string.IsNullOrEmpty(user.AvatarUrl))
                 {
