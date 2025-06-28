@@ -77,10 +77,8 @@ namespace Authen
                     new Claim(JwtClaimTypes.PhoneNumberVerified, user.PhoneNumberConfirmed ? "true" : "false", ClaimValueTypes.Boolean)
                 });
                 }
-                if (!string.IsNullOrEmpty(user.AvatarUrl))
-                {
-                    claims.Add(new Claim("avatar", user.AvatarUrl ?? ""));
-                }
+
+                claims.Add(new Claim("avatar", user.AvatarUrl ?? ""));
 
                 if (user.UserType == DefaultRoleNames.Administrator && allowsClientIds.Contains(clientId))
                 {
