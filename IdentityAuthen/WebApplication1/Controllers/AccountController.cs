@@ -53,6 +53,7 @@ namespace Authen.Controllers
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IAuthenticationHandlerProvider _handlerProvider;
         private readonly IEventService _events;
+        private readonly ILogger<AccountController> _logger;
 
         private readonly ApplicationDbContext _dbContext;
 
@@ -64,7 +65,8 @@ namespace Authen.Controllers
              IAuthenticationSchemeProvider schemeProvider,
              IAuthenticationHandlerProvider handlerProvider,
              IEventService events,
-             ApplicationDbContext dbContext)
+             ApplicationDbContext dbContext,
+             ILogger<AccountController> _logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -139,7 +141,7 @@ namespace Authen.Controllers
                 if (user != default(ApplicationUser))
                 {
 
-                    if(await CheckForSuccessLogin(context!, user))
+                    if (await CheckForSuccessLogin(context!, user))
                     {
                         var result = await _signInManager.PasswordSignInAsync(user!.UserName!, model.Password, model.RememberLogin, lockoutOnFailure: true);
 
@@ -185,7 +187,7 @@ namespace Authen.Controllers
                             return View("Lockout");
                         }
                     }
-                    
+
                 }
 
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials login", clientId: context?.Client.ClientId));
@@ -830,7 +832,18 @@ namespace Authen.Controllers
 
         private async Task<bool> CheckForSuccessLogin(AuthorizationRequest context, ApplicationUser user)
         {
+            _logger.LogInformation("AuthorizationRequest:{0}", context.Client.ToString());
+
             var clientId = context?.Client.ClientId;
+
+            _logger.LogInformation("Checking login for user: {UserId}, client: {ClientId}", user?.Id, clientId);
+
+            if (user == null)
+            {
+                // hoặc throw Exception nếu đây là lỗi nghiêm trọng
+                return false;
+            }
+
 
             // 🔍 Lấy role của user
             var userRoles = await _userManager.GetRolesAsync(user);
