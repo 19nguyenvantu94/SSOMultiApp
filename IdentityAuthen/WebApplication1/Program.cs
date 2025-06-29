@@ -23,6 +23,7 @@ using AuthenApi.Services.Interfaces;
 using Finbuckle.MultiTenant;
 using Finbuckle.MultiTenant.Abstractions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
@@ -40,6 +41,7 @@ using Serilog.Extensions.Logging;
 using Serilog.Sinks.SystemConsole.Themes;
 using SharedLib.DistributedRedis;
 using SharedLib.MySQL;
+using StackExchange.Redis;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
@@ -63,14 +65,21 @@ builder.Logging.AddSerilog();
 
 var configuration = builder.Configuration;
 
-builder.AddRedisDistributedCache("Redis");
+// Đăng ký IConnectionMultiplexer
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var redisConnectionString = builder.Configuration.GetValue<string>("Redis");
+    var configurationOptions = ConfigurationOptions.Parse(redisConnectionString, true);
+    configurationOptions.AbortOnConnectFail = false;
+
+    return ConnectionMultiplexer.Connect(configurationOptions);
+});
+
+//builder.AddRedisDistributedCache("Redis");
 
 //builder.AddRabbitMqEventBus("EventBus");
 builder.AddMySqlDbContext<ApplicationDbContext>("Identitydb");
 builder.AddMySqlDbContext<TenantStoreDbContext>("Identitydb");
-
-builder.Services.AddSingleton<RedisUserRepository>();
-
 
 builder.Services.AddControllers(options =>
 {
@@ -269,6 +278,19 @@ builder.Services.Configure<RequestLocalizationOptions>(
         opts.SupportedUICultures = supportedCultures;
     });
 
+
+
+var redisConnectionString = configuration["ConnectionStrings:Redis"];
+
+var configOptions = ConfigurationOptions.Parse(redisConnectionString);
+configOptions.AbortOnConnectFail = false;
+
+var redis = ConnectionMultiplexer.Connect(configOptions);
+// ✅ Cấu hình DataProtection dùng Redis để lưu key
+builder.Services.AddDataProtection()
+    .SetApplicationName("identity-auth") // ⚠️ Tên này phải giống nhau trên mọi instance
+    .PersistKeysToStackExchangeRedis(ConnectionMultiplexer.Connect(configOptions), "DataProtection-Keys");
+
 builder.Services.AddIdentityServer(options =>
                 {
                     options.KeyManagement.Enabled = true;
@@ -314,7 +336,7 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddMvc().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
-
+builder.Services.AddScoped<RedisUserRepository>();
 builder.Services.AddControllersWithViews(o =>
 {
     o.Conventions.Add(new GenericControllerRouteConvention());
