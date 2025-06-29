@@ -3,6 +3,7 @@ using Authen.Authorization;
 using Authen.Configuration.Email;
 using Authen.Constants;
 using Authen.Data;
+using Authen.Helpers;
 using Authen.Helpers.Localization;
 using Authen.Localization;
 using Authen.Repositories;
@@ -30,6 +31,8 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Polly;
 using SendGrid;
 using Serilog;
 using Serilog.Events;
@@ -40,6 +43,7 @@ using SharedLib.MySQL;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
+using System.Security.Cryptography;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -265,7 +269,14 @@ builder.Services.Configure<RequestLocalizationOptions>(
         opts.SupportedUICultures = supportedCultures;
     });
 
-builder.Services.AddIdentityServer()
+builder.Services.AddIdentityServer(options =>
+                {
+                    options.KeyManagement.Enabled = true;
+                    options.KeyManagement.RotationInterval = TimeSpan.FromDays(30); // mặc định 90
+                    options.KeyManagement.PropagationTime = TimeSpan.FromMinutes(5); // thời gian chờ publish public key
+                    options.KeyManagement.RetentionDuration = TimeSpan.FromDays(180);
+                })
+                .AddKeyManagement()
                 .AddConfigurationStore<ApplicationDbContext>()
                 .AddOperationalStore<ApplicationDbContext>()
                 .AddAspNetIdentity<ApplicationUser>()
