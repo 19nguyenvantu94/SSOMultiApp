@@ -832,6 +832,8 @@ namespace Authen.Controllers
 
         private async Task<bool> CheckForSuccessLogin(AuthorizationRequest context, ApplicationUser user)
         {
+
+            _logger.LogInformation("CheckForSuccessLogin AuthorizationRequest:{0}", context.ToString());
             _logger.LogInformation("AuthorizationRequest:{0}", context.Client.ToString());
 
             var clientId = context?.Client.ClientId;
@@ -843,7 +845,6 @@ namespace Authen.Controllers
                 // hoặc throw Exception nếu đây là lỗi nghiêm trọng
                 return false;
             }
-
 
             // 🔍 Lấy role của user
             var userRoles = await _userManager.GetRolesAsync(user);
