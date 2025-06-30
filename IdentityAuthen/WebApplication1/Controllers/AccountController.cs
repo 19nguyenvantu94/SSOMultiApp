@@ -836,7 +836,7 @@ namespace Authen.Controllers
         {
 
             _logger.LogInformation("CheckForSuccessLogin AuthorizationRequest:{0}", context == null ? "" : context.ToString());
-            _logger.LogInformation("AuthorizationRequest:{0}", context != null && context.Client != null ? "" : context!.Client!.ToString());
+            _logger.LogInformation("AuthorizationRequest:{0}", context != null && context.Client != null ? context!.Client!.ToString() : "");
 
             var clientId = context?.Client.ClientId;
 
