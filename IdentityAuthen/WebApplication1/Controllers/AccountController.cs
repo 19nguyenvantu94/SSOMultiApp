@@ -66,7 +66,7 @@ namespace Authen.Controllers
              IAuthenticationHandlerProvider handlerProvider,
              IEventService events,
              ApplicationDbContext dbContext,
-             ILogger<AccountController> _logger)
+             ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -76,6 +76,8 @@ namespace Authen.Controllers
             _handlerProvider = handlerProvider;
             _events = events;
             _dbContext = dbContext;
+
+            _logger = logger;
         }
 
         /// <summary>
@@ -833,8 +835,8 @@ namespace Authen.Controllers
         private async Task<bool> CheckForSuccessLogin(AuthorizationRequest context, ApplicationUser user)
         {
 
-            _logger.LogInformation("CheckForSuccessLogin AuthorizationRequest:{0}", context.ToString());
-            _logger.LogInformation("AuthorizationRequest:{0}", context.Client.ToString());
+            _logger.LogInformation("CheckForSuccessLogin AuthorizationRequest:{0}", context == null ? "" : context.ToString());
+            _logger.LogInformation("AuthorizationRequest:{0}", context != null && context.Client != null ? context!.Client!.ToString() : "");
 
             var clientId = context?.Client.ClientId;
 
