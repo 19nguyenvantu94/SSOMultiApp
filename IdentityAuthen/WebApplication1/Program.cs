@@ -65,10 +65,11 @@ builder.Logging.AddSerilog();
 
 var configuration = builder.Configuration;
 
+var redisConnectionString = configuration["ConnectionStrings:Redis"];
+
 // Đăng ký IConnectionMultiplexer
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    var redisConnectionString = builder.Configuration.GetValue<string>("Redis");
     var configurationOptions = ConfigurationOptions.Parse(redisConnectionString, true);
     configurationOptions.AbortOnConnectFail = false;
 
@@ -278,9 +279,6 @@ builder.Services.Configure<RequestLocalizationOptions>(
         opts.SupportedUICultures = supportedCultures;
     });
 
-
-
-var redisConnectionString = configuration["ConnectionStrings:Redis"];
 
 var configOptions = ConfigurationOptions.Parse(redisConnectionString);
 configOptions.AbortOnConnectFail = false;
