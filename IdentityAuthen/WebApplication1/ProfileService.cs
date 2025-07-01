@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Security.Claims;
 
 
@@ -44,17 +45,15 @@ namespace Authen
                     throw new ArgumentException("Invalid subject identifier");
 
                 var claims = new List<Claim>
-            {
-                new Claim("sub",user.Id.ToString()),
-                new Claim(JwtClaimTypes.PreferredUserName, user.UserName!),
-                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName!),
-                new Claim(JwtRegisteredClaimNames.Name, user.FullName!.ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.GivenName, user.FirstName!.ToString()),
-                new Claim(ClaimTypes.Surname, user.LastName!.ToString())
-
-
-            };
+                {
+                    new Claim("sub",user.Id.ToString()),
+                    new Claim(JwtClaimTypes.PreferredUserName, user.UserName!),
+                    new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName!),
+                    new Claim(JwtRegisteredClaimNames.Name, user.FullName!.ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.GivenName, user.FirstName!.ToString()),
+                    new Claim(ClaimTypes.Surname, user.LastName!.ToString())
+                };
 
                 if (_userManager.SupportsUserEmail)
                 {
@@ -75,6 +74,38 @@ namespace Authen
                 }
 
                 claims.Add(new Claim("avatar", user.AvatarUrl ?? ""));
+
+                var clientId = context.Client?.ClientId;
+                if (!string.IsNullOrEmpty(clientId))
+                {
+                    // Get the client entity
+                    var client = await _applicationDbContext.Clients
+                        .Where(c => c.ClientId == clientId)
+                        .FirstOrDefaultAsync();
+
+                    if (client != null)
+                    {
+                        // Get all claims configured for this client
+                        var clientClaims = await _applicationDbContext.ClientClaims
+                            .Where(cc => cc.ClientId == client.Id)
+                             .Select(c => c.Type)
+                            .ToListAsync();
+
+                        foreach (var propName in clientClaims)
+                        {
+                            // Dùng reflection để lấy giá trị từ user
+                            var prop = typeof(ApplicationUser).GetProperty(propName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                            if (prop != null)
+                            {
+                                var value = prop.GetValue(user)?.ToString();
+                                if (!string.IsNullOrEmpty(value))
+                                {
+                                    claims.Add(new Claim(propName.ToLowerInvariant(), value));
+                                }
+                            }
+                        }
+                    }
+                }
 
                 if (user.UserType == DefaultRoleNames.Administrator)
                 {
