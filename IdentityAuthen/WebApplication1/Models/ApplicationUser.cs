@@ -53,5 +53,9 @@ namespace Authen.Users.Models
         public string? AvatarUrl { get; set; }
 
         public string? UserType { get; set; }
+
+        public string? Country { get; set; }
+        public string? CountryFlag { get; set; }
+
     }
 }
