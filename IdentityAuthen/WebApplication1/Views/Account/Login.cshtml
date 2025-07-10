@@ -67,8 +67,11 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <button class="btn btn-primary" name="button" value="login">@Localizer["Login"]</button>
-                                        <button class="btn btn-secondary" name="button" value="cancel">@Localizer["Cancel"]</button>
-                                        <a asp-action="ForgotPassword" asp-controller="Account" class="btn btn-info" value="forgot">@Localizer["Forgot"]</a>
+                                        @if (string.IsNullOrEmpty(Model.ClientId))
+                                        {
+                                            <button class="btn btn-secondary" name="button" value="cancel">@Localizer["Cancel"]</button>
+                                            <a asp-action="ForgotPassword" asp-controller="Account" class="btn btn-info" value="forgot">@Localizer["Forgot"]</a>
+                                        }
                                         @* @if (RootConfiguration.RegisterConfiguration.Enabled)
                                     {
                                     <a asp-action="Register" asp-controller="Account" class="btn btn-dark" value="forgot">@Localizer["Register"]</a>
