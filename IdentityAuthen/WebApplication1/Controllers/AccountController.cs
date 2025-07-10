@@ -759,6 +759,7 @@ namespace Authen.Controllers
                 Username = context?.LoginHint!,
                 ExternalProviders = providers.ToArray(),
                 Password = string.Empty,
+                ClientId = context == null ? "" : (context.Client == null ? ""  : context.Client.ClientId)
             };
         }
 
