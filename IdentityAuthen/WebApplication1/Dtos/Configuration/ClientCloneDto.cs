@@ -5,9 +5,9 @@ namespace AuthenApi.Dtos.Configuration
 {
     public class ClientCloneDto : ClientDto
     {
-        public string ClientIdOriginal { get; set; }
+        public string? ClientIdOriginal { get; set; }
 
-        public string ClientNameOriginal { get; set; }
+        public string? ClientNameOriginal { get; set; }
 
         public bool CloneClientCorsOrigins { get; set; }
 
